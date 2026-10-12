@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FINT · Maritime Autonomy Science & Technology</title>
+<meta name="description" content="FINT (Fluid dynamics and Intelligent Navigation Technologies), a joint laboratory at Korea Maritime & Ocean University — ship hydrodynamics and control (CFD) and collision avoidance for autonomous ships.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   색상·글꼴 — 여기 값만 바꾸면 사이트 전체 분위기가 바뀝니다
+   ========================================================= */
+:root{
+  --paper:#F4F8F9;
+  --chart:#DDEAEF;
+  --depth:#A7C3CF;
+  --ink:#0F2B3A;
+  --sounding:#58707C;
+  --signal:#C46F12;
+  --sea:#0F2B3A;
+  --echo:#8FD0B5;
+  --radius:6px;
+  --font:'IBM Plex Sans KR', system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{max-width:100%;display:block}
+ul,ol{list-style:none}
+:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.ko{color:var(--sounding);font-size:.92em}
+p+p{margin-top:.8em}
+
+/* ---------- 상단 ---------- */
+header{position:sticky;top:0;z-index:20;background:rgba(244,248,249,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--chart)}
+.bar{display:flex;align-items:center;justify-content:space-between;height:68px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;letter-spacing:-.01em}
+.brand img{height:38px;width:auto}
+.brand .sep{width:1px;height:30px;background:var(--depth)}
+.brand svg{flex:none}
+.brand b{font-weight:700;font-size:20px;letter-spacing:.04em;line-height:1.1}
+.brand small{display:block;font-weight:400;font-size:12px;color:var(--sounding);line-height:1.2;margin-top:2px}
+nav ul{display:flex;gap:2px}
+nav a{display:block;padding:8px 11px;border-radius:var(--radius);text-decoration:none;font-size:15px;color:var(--sounding)}
+nav a:hover{color:var(--ink);background:var(--chart)}
+nav a[aria-current="page"]{color:var(--ink);font-weight:600}
+.menu-btn{display:none;background:none;border:1px solid var(--depth);border-radius:var(--radius);padding:6px 12px;font:inherit;font-size:14px;color:var(--ink);cursor:pointer}
+@media (max-width:960px){
+  .menu-btn{display:block}
+  .brand small{display:none}
+  nav{position:absolute;top:68px;left:0;right:0;background:var(--paper);border-bottom:1px solid var(--chart);display:none}
+  nav.open{display:block}
+  nav ul{flex-direction:column;padding:8px 16px 16px}
+}
+
+/* ---------- 공통 ---------- */
+main section{display:none;padding:64px 0 96px}
+main section.active{display:block}
+h1{font-size:clamp(32px,4.4vw,50px);line-height:1.14;letter-spacing:-.025em;font-weight:700}
+h2{font-size:28px;line-height:1.25;letter-spacing:-.02em;font-weight:600;margin-bottom:6px}
+h3{font-size:20px;line-height:1.35;font-weight:600}
+.page-head{margin-bottom:48px;max-width:720px}
+.page-head p{margin-top:12px;color:var(--sounding)}
+.btn{display:inline-block;padding:11px 20px;border-radius:var(--radius);text-decoration:none;font-weight:500;font-size:15px;border:1px solid var(--ink);background:none;font-family:inherit;cursor:pointer;color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn:hover{background:var(--chart);color:var(--ink)}
+.more{display:inline-block;margin-top:16px;font-size:15px;font-weight:500}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.tags span{font-size:13px;padding:3px 10px;border-radius:20px;background:var(--chart);color:var(--ink)}
+
+/* ---------- 홈 ---------- */
+#home{padding-top:40px}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.hero .univ{font-size:15px;color:var(--sounding);margin-bottom:14px}
+.hero p.lead{font-size:18px;margin-top:22px;max-width:34em}
+.hero .ko{margin-top:10px;max-width:34em}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.radar{position:relative;aspect-ratio:1;border-radius:50%;background:var(--sea);overflow:hidden;box-shadow:0 0 0 10px var(--chart)}
+.radar canvas{width:100%;height:100%;display:block}
+.scene-caption{margin-top:22px;font-size:13px;color:var(--sounding);text-align:center}
+@media (max-width:900px){.hero{grid-template-columns:1fr}.radar-box{max-width:420px;width:100%;margin:0 auto}}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px 24px;margin-top:80px;padding-top:32px;border-top:1px solid var(--depth)}
+.stat{display:block;text-decoration:none;padding:4px 0}
+.stat b{display:block;font-size:40px;line-height:1;font-weight:600;letter-spacing:-.03em}
+.stat span{display:block;margin-top:8px;font-size:15px}
+.stat .ko{display:block;font-size:13px}
+a.stat:hover b{color:var(--signal)}
+.stats-note{margin-top:16px;font-size:13px;color:var(--sounding)}
+.stats-note a{font-weight:500}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+.home-donut{margin-top:64px;padding-top:40px;border-top:1px solid var(--chart)}
+.home-donut h2{font-size:24px}
+.home-donut .ko{display:block;margin-bottom:24px}
+.home-lower{display:grid;grid-template-columns:1.2fr .8fr;gap:56px;margin-top:80px;padding-top:48px;border-top:1px solid var(--chart)}
+@media (max-width:900px){.home-lower{grid-template-columns:1fr}}
+.area-mini{padding:16px 0;border-bottom:1px solid var(--chart)}
+.area-mini strong{display:block}
+.area-mini .ko{display:block}
+.area-mini em{display:block;font-style:normal;font-size:14px;color:var(--sounding);margin-top:4px}
+
+/* ---------- 연구 ---------- */
+.areas{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--depth)}
+.area{padding:36px 36px 40px 0;border-bottom:1px solid var(--depth)}
+.area+.area{padding-left:36px;padding-right:0;border-left:1px solid var(--depth)}
+.area .ko-title{color:var(--sounding);font-size:15px;margin:4px 0 8px}
+.area .lead-by{font-size:14px;color:var(--sounding);margin-bottom:18px}
+.area ul li{padding:10px 0;border-top:1px solid var(--chart)}
+.area ul li .ko{display:block;font-size:14px}
+@media (max-width:760px){.areas{grid-template-columns:1fr}.area,.area+.area{padding:28px 0;border-left:none}}
+.joint{margin-top:56px;padding:36px;border-radius:var(--radius);background:var(--chart)}
+.joint h2{font-size:24px}
+.joint ul{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:24px}
+.joint ul li strong{display:block;margin-bottom:6px}
+.joint ul li .ko{display:block;font-size:14px}
+@media (max-width:760px){.joint{padding:24px}.joint ul{grid-template-columns:1fr}}
+.projects{width:100%;border-collapse:collapse;margin-top:16px;font-size:15px}
+.projects th{text-align:left;font-weight:600;color:var(--sounding);padding:10px 12px 10px 0;border-bottom:1px solid var(--ink)}
+.projects td{padding:14px 12px 14px 0;border-bottom:1px solid var(--chart);vertical-align:top}
+.table-scroll{overflow-x:auto}
+
+/* ---------- 구성원 ---------- */
+.group{margin-bottom:56px}
+.group>h2{font-size:22px;margin-bottom:20px}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:28px}
+.person{display:flex;gap:16px;align-items:flex-start}
+.avatar{flex:none;width:72px;height:72px;border-radius:50%;background:var(--chart);display:grid;place-items:center;font-weight:600;color:var(--sounding);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.person .name,.pi .name{font-weight:600}
+.person .role,.pi .role{font-size:14px;color:var(--sounding)}
+.person .interest{font-size:14px;margin-top:4px}
+.person a{font-size:14px}
+.pi{display:grid;grid-template-columns:150px 1fr;gap:32px;align-items:start;padding:32px;background:#fff;border:1px solid var(--chart);border-radius:var(--radius)}
+.pi+.pi{margin-top:24px}
+.pi .avatar{width:150px;height:150px;font-size:30px;border-radius:12px}
+.pi .name{font-size:22px}
+.pi .field{margin-top:12px;font-size:15px}
+.pi dl{display:grid;grid-template-columns:70px 1fr;gap:4px 16px;margin-top:16px;font-size:14px}
+.pi dt{color:var(--sounding)}
+.pi .cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:22px;padding-top:18px;border-top:1px solid var(--chart)}
+.pi .cols h4{font-size:14px;font-weight:600;margin-bottom:8px}
+.pi .cols li{font-size:13.5px;color:var(--sounding);padding:3px 0;line-height:1.45}
+.pi .cols li b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums;margin-right:6px}
+.pi .links{margin-top:16px;font-size:14px}
+@media (max-width:700px){.pi{grid-template-columns:1fr;padding:24px}.pi .avatar{width:120px;height:120px}.pi .cols{grid-template-columns:1fr}}
+
+/* ---------- 논문 ---------- */
+.pub-summary{margin-bottom:12px;max-width:760px}
+.pub-summary+p{margin-bottom:28px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px}
+.filters button{font:inherit;font-size:14px;padding:6px 14px;border-radius:20px;border:1px solid var(--depth);background:transparent;color:var(--ink);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.year{display:grid;grid-template-columns:90px 1fr;gap:24px;padding:24px 0;border-top:1px solid var(--chart)}
+.year>strong{font-size:22px;font-weight:600;color:var(--sounding)}
+.pub{padding:0 0 18px}
+.pub:last-child{padding-bottom:0}
+.pub .t{font-weight:600}
+.pub .a,.pub .v{font-size:15px;color:var(--sounding)}
+.pub .a b{color:var(--ink);font-weight:600}
+.kind{display:inline-block;font-size:12px;padding:1px 8px;border-radius:10px;background:var(--chart);margin:0 6px 4px 0;vertical-align:2px;font-weight:500}
+.kind.jcr{background:#F4E3CF}
+.kind.patent{background:#E7E3F4}
+@media (max-width:620px){.year{grid-template-columns:1fr;gap:8px}}
+
+/* ---------- 논문 통계 ---------- */
+.metric{margin-top:56px;padding-top:40px;border-top:1px solid var(--chart)}
+.metric:first-of-type{margin-top:0;padding-top:0;border-top:none}
+.metric h2{font-size:22px}
+.metric .ko{display:block;margin-bottom:20px}
+.donut-wrap{display:grid;grid-template-columns:260px 1fr;gap:40px;align-items:center}
+.donut-wrap svg{width:100%;height:auto}
+.jtable{width:100%;border-collapse:collapse;font-size:15px}
+.jtable th{text-align:left;font-weight:600;color:var(--sounding);padding:8px 10px 8px 0;border-bottom:1px solid var(--ink)}
+.jtable td{padding:10px 10px 10px 0;border-bottom:1px solid var(--chart);vertical-align:middle}
+.jtable td.n,.jtable th.n{text-align:right;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:10px;vertical-align:-1px}
+@media (max-width:700px){.donut-wrap{grid-template-columns:1fr}.donut-wrap svg{max-width:260px;margin:0 auto}}
+.bars svg{max-width:100%;height:auto}
+.band{display:flex;height:34px;border-radius:var(--radius);overflow:hidden;background:var(--chart);max-width:720px}
+.band div{display:grid;place-items:center;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;border-right:2px solid var(--paper)}
+.band div:last-child{border-right:none}
+.band-legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;font-size:14px}
+
+/* ---------- 수상·소식 ---------- */
+.news-list li{display:grid;grid-template-columns:110px 1fr;gap:20px;padding:18px 0;border-bottom:1px solid var(--chart)}
+.news-list time,.news-list .y{color:var(--sounding);font-size:15px;font-variant-numeric:tabular-nums}
+.news-list .ko{display:block}
+.news-list .sub{display:block;font-size:14px;color:var(--sounding)}
+@media (max-width:620px){.news-list li{grid-template-columns:1fr;gap:2px}}
+
+/* ---------- 연락처·지원 ---------- */
+.contact{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.contact-card+.contact-card{margin-top:28px;padding-top:28px;border-top:1px solid var(--chart)}
+.contact-card h3{margin-bottom:10px}
+.contact dl{display:grid;grid-template-columns:80px 1fr;gap:8px 16px;font-size:15px}
+.contact dt{color:var(--sounding)}
+.apply{padding:32px;border-radius:var(--radius);background:#fff;border:1px solid var(--chart)}
+.apply h3{margin-bottom:4px}
+.apply>.ko{display:block;margin-bottom:18px}
+.apply label{display:block;font-size:14px;font-weight:500;margin:14px 0 6px}
+.apply label span{color:var(--sounding);font-weight:400}
+.apply input,.apply select,.apply textarea{width:100%;font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--depth);border-radius:var(--radius);background:var(--paper);color:var(--ink)}
+.apply textarea{min-height:120px;resize:vertical}
+.apply .btn{margin-top:20px}
+.apply .hint{font-size:13px;color:var(--sounding);margin-top:12px}
+.apply .status{margin-top:12px;font-size:14px;font-weight:500}
+@media (max-width:800px){.contact{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--chart);padding:32px 0;font-size:14px;color:var(--sounding)}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+footer img{height:30px;width:auto;opacity:.85}
+footer .left{display:flex;align-items:center;gap:14px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#home" aria-label="FINT home">
+      <img src="img/kmou_logo.png" alt="Korea Maritime &amp; Ocean University" onerror="this.nextElementSibling.remove();this.remove()">
+      <span class="sep"></span>
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+        <path d="M17 6v22" stroke="#0F2B3A" stroke-width="2" stroke-linecap="round"/>
+        <path d="M9 12h16" stroke="#0F2B3A" stroke-width="2" stroke-linecap="round"/>
+        <path d="M17 12L9 26M17 12l8 14" stroke="#A7C3CF" stroke-width="1.2"/>
+        <circle cx="17" cy="5" r="2.4" fill="#C46F12"/>
+        <path d="M5 29c3-2 5-2 8 0s5 2 8 0 5-2 8 0" stroke="#A7C3CF" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span><b>FINT </b><small id="lab-full"></small></span>
+    </a>
+    <button class="menu-btn" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav">
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#research">Research</a></li>
+        <li><a href="#members">Members</a></li>
+        <li><a href="#publications">Publications</a></li>
+        <li><a href="#awards">Awards</a></li>
+        <li><a href="#news">News</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ================= HOME ================= -->
+  <section id="home">
+    <div class="wrap">
+      <div class="hero">
+        <div>
+          <p class="univ" id="hero-univ"></p>
+          <h1 id="hero-title"></h1>
+          <p class="lead" id="hero-lead"></p>
+          <p class="ko" id="hero-ko"></p>
+          <div class="actions">
+            <a class="btn primary" href="#research">Research</a>
+            <a class="btn" href="#contact">Join the lab</a>
+          </div>
+        </div>
+        <div class="radar-box">
+          <div class="radar"><canvas id="radar" role="img" aria-label="Animated radar display with vessel targets"></canvas></div>
+          <p class="scene-caption">Simulated traffic picture · 시뮬레이션 화면</p>
+        </div>
+      </div>
+
+      <div class="stats" id="stats"></div>
+      <p class="stats-note" id="stats-note"></p>
+
+      <div class="home-donut">
+        <h2>SCIE papers by journal</h2>
+        <span class="ko">학술지별 SCIE 논문 수</span>
+        <div class="donut-wrap" id="home-donut"></div>
+        <a class="more" href="#metrics">Publication metrics</a>
+      </div>
+
+      <div class="home-lower">
+        <div>
+          <h2>Research areas</h2>
+          <p class="ko">연구 분야</p>
+          <div id="home-areas" style="margin-top:12px"></div>
+          <a class="more" href="#research">Research in detail</a>
+        </div>
+        <div>
+          <h2>News</h2>
+          <p class="ko">소식</p>
+          <ul class="news-list" id="home-news" style="margin-top:12px"></ul>
+          <a class="more" href="#news">All news</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section id="about">
+    <div class="wrap">
+      <div class="page-head">
+        <h1>About FINT </h1>
+        <p>연구실 소개</p>
+      </div>
+      <div style="max-width:720px">
+        <div id="about-en"></div>
+        <div id="about-ko" style="margin-top:36px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RESEARCH ================= -->
+  <section id="research">
+    <div class="wrap">
+      <div class="page-head">
+        <h1>Research</h1>
+        <p>연구 분야 및 과제</p>
+      </div>
+      <div class="areas" id="areas"></div>
+      <div class="joint" id="joint"></div>
+
+      <h2 style="margin-top:72px">Projects</h2>
+      <p class="ko">수행 과제</p>
+      <div class="table-scroll">
+        <table class="projects">
+          <thead><tr><th>Project · 과제명</th><th>Funding · 지원기관</th><th>Period · 기간</th></tr></thead>
+          <tbody id="projects"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MEMBERS ================= -->
+  <section id="members">
+    <div class="wrap">
+      <div class="page-head">
+        <h1>Members</h1>
+        <p>구성원</p>
+      </div>
+      <div id="members-list"></div>
+    </div>
+  </section>
+
+  <!-- ================= PUBLICATIONS ================= -->
+  <section id="publications">
+    <div class="wrap">
+      <div class="page-head">
+        <h1>Publications &amp; patents</h1>
+        <p>논문 및 특허</p>
+      </div>
+      <p class="pub-summary" id="pub-summary"></p>
+      <p><a href="#metrics">Publication metrics · 논문 통계 보기</a></p>
+      <div class="filters" id="filters" role="group" aria-label="Filter publications"></div>
+      <div id="pubs"></div>
+    </div>
+  </section>
+
+  <!-- ================= METRICS ================= -->
+  <section id="metrics">
+    <div class="wrap">
+      <div class="page-head">
+        <h1>Publication metrics</h1>
+        <p>논문 통계 · <a href="#publications">Back to the list</a></p>
+      </div>
+      <div class="metric">
+        <h2>SCIE papers by journal</h2>
+        <span class="ko">학술지별 SCIE 논문 수</span>
+        <div class="donut-wrap" id="donut"></div>
+      </div>
+      <div class="metric">
+        <h2>SCIE papers by year</h2>
+        <span class="ko">연도별 SCIE 논문 수</span>
+        <div class="bars" id="bars"></div>
+      </div>
+      <div class="metric">
+        <h2>JCR percentile of the journals</h2>
+        <span class="ko">게재 학술지의 JCR 백분위 분포</span>
+        <div id="band"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AWARDS ================= -->
+  <section id="awards">
+    <div class="wrap">
+      <div class="page-head">
+        <h1>Awards</h1>
+        <p>수상</p>
+      </div>
+      <ul class="news-list" id="awards-list"></ul>
+    </div>
+  </section>
+
+  <!-- ================= NEWS ================= -->
+  <section id="news">
+    <div class="wrap">
+      <div class="page-head">
+        <h1>News</h1>
+        <p>연구실 소식</p>
+      </div>
+      <ul class="news-list" id="news-list"></ul>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="page-head">
+        <h1>Contact</h1>
+        <p>연락처 및 연구실 지원</p>
+      </div>
+      <div class="contact">
+        <div id="contact-cards"></div>
+        <form class="apply" id="apply" novalidate>
+          <h3>Join the lab</h3>
+          <span class="ko">석·박사과정 지원 및 문의</span>
+          <p id="recruit-text" style="font-size:15px"></p>
+          <label for="f-name">Name · 이름</label>
+          <input id="f-name" name="name" required autocomplete="name">
+          <label for="f-email">E-mail · 이메일</label>
+          <input id="f-email" name="email" type="email" required autocomplete="email">
+          <label for="f-aff">Affiliation and status · 소속과 현재 상태 <span>(e.g. OO University, 4th year)</span></label>
+          <input id="f-aff" name="affiliation" required>
+          <label for="f-area">Area of interest · 관심 분야</label>
+          <select id="f-area" name="area">
+            <option>Ship hydrodynamics and control (Prof. Kim)</option>
+            <option>Collision avoidance and autonomous navigation (Prof. Lee)</option>
+            <option>Not decided yet</option>
+          </select>
+          <label for="f-msg">Message · 내용 <span>(what you would like to study, questions)</span></label>
+          <textarea id="f-msg" name="message"></textarea>
+          <button class="btn primary" type="submit">Send</button>
+          <p class="hint" id="apply-hint"></p>
+          <p class="status" id="apply-status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="left">
+      <img src="img/kmou_logo.png" alt="" onerror="this.remove()">
+      <span id="footer-name"></span>
+    </div>
+    <span>© <span id="year"></span> Korea Maritime &amp; Ocean University</span>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   ✏️ 내용 수정은 여기서만 하면 됩니다.
+   [ ] 로 표시된 부분이 채워 넣을 자리입니다.
+   ========================================================= */
+
+const LAB = {
+  name: "FINT",
+  full: "Maritime Autonomy Science & Technology",
+  univ: "Korea Maritime & Ocean University",
+  division: "Division of Navigation Convergence Studies",   // 항해융합학부 영문 표기 — 확인 후 수정
+  building: "Maritime College Bldg.",                        // 해사대학관
+  buildingKo: "해사대학관",
+  labRooms: "Rooms 211 and 414",
+  labRoomsKo: "211호 · 414호",
+  lead: "The FINT Lab is jointly run by Professor Daejeong Kim and Professor Heejin Lee of the Division of Navigation Convergence Studies at Korea Maritime & Ocean University. The lab links ship maneuvering analysis using computational fluid dynamics (CFD) with ship collision avoidance research, and develops safe navigation technologies that take the motion characteristics of each ship into account. Through this work, we aim to improve navigational safety for a wide range of ships, including autonomous ships.",
+  leadKo: "FINT 연구실은 국립한국해양대학교 항해융합학부 김대정 교수와 이희진 교수가 공동으로 운영하는 연구실입니다. 전산유체역학(CFD)을 활용한 선박 조종운동 해석과 선박 충돌회피 연구를 연계하여, 선박의 운동 특성을 고려한 선박의 안전 운항 기술을 개발합니다. 이를 통해 자율운항선박을 포함한 다양한 선박의 항해 안전성 향상에 기여하고자 합니다.",
+  aboutEn: [
+    "FINT (Fluid dynamics and Intelligent Navigation Technologies Lab.) is jointly run by Professor Daejeong Kim and Professor Heejin Lee of the Division of Navigation Convergence Studies at Korea Maritime & Ocean University.",
+    "The lab links ship maneuvering analysis using computational fluid dynamics (CFD) with ship collision avoidance research, and develops safe navigation technologies that take the motion characteristics of each ship into account.",
+    "Through this work, we aim to improve navigational safety for a wide range of ships, including autonomous ships."
+  ],
+  aboutKo: [
+    "FINT (Fluid dynamics and Intelligent Navigation Technologies) 연구실은 국립한국해양대학교 항해융합학부 김대정 교수와 이희진 교수가 함께 운영하는 공동연구실입니다.",
+    "전산유체역학(CFD)을 활용한 선박 조종운동 해석과 선박 충돌회피 연구를 연계하여, 선박의 운동 특성을 고려한 선박의 안전 운항 기술을 개발합니다.",
+    "이를 통해 자율운항선박을 포함한 다양한 선박의 항해 안전성 향상에 기여하고자 합니다."
+  ],
+  recruit: "Fill in the form and it will be sent to both advisors. · 아래 내용을 적어 보내면 두 지도교수에게 전달됩니다.",
+  /* 지원 양식 전송 방식
+     - 비워 두면: 지원자의 메일 앱이 열리고 내용이 채워진 상태로 두 교수님 주소가 수신인에 들어갑니다. (설정 필요 없음)
+     - Formspree 등 폼 서비스 주소를 넣으면 (예: "https://formspree.io/f/xxxxxxxx"): 사이트에서 바로 전송되고 교수님 메일로 도착합니다. */
+  formEndpoint: ""
+};
+
+/* 연구 분야 — lead: 담당 교수 이름(MEMBERS의 ko 값과 같게) */
+const AREAS = [
+  { en:"Ship hydrodynamics and control", ko:"선박 유체역학 및 제어", lead:"김대정",
+    summary:"CFD analysis of ship manoeuvring and motion, and guidance, navigation and control (GNC) for autonomous surface ships.",
+    summaryKo:"CFD를 이용한 선박 조종운동 해석과 자율운항선박의 유도·항법·제어(GNC) 연구",
+    topics:[
+      { en:"CFD simulation of ship manoeuvring in waves, shallow water and currents", ko:"파랑·천수·조류 조건에서의 선박 조종성능 CFD 시뮬레이션" },
+      { en:"Course keeping and path-following control for MASS", ko:"자율운항선박의 침로유지 및 경로추종 제어" },
+      { en:"Guidance, navigation and control of surface ships", ko:"선박 유도·항법·제어(GNC)" },
+      { en:"Motion of floating structures and gas-dispersion simulation", ko:"해양부유체 운동 및 가스 누출 시뮬레이션" }
+    ],
+    tags:["URANS CFD","Manoeuvring","Path following","MPC","Seakeeping"] },
+  { en:"Collision avoidance and autonomous navigation", ko:"선박 충돌회피 및 자율운항", lead:"이희진",
+    summary:"We identify situations in which collision between ships is inevitable that account for ship manoeuvring capabilities. By first identifying these situations, we take a reverse approach to studying ship collision avoidance. We also explore various approaches to determining safe separation distances between ships.",
+    summaryKo:"선박의 조종성능을 고려한 선박 간 충돌을 피할 수 없는 상황을 식별. 이러한 상황을 먼저 규명하는 역방향 접근을 통해, 선박의 충돌회피를 연구. 그 외 안전거리 설정을 위한 다양한 접근으로 연구 진행.",
+    topics:[
+      { en:"Collision-risk assessment and ship-domain modelling", ko:"충돌위험도 평가 및 선박 도메인 모델링" },
+      { en:"Timing of evasive action for stand-on and give-way ships", ko:"유지선·피항선의 피항 행동 시점" },
+      { en:"Ship trajectory prediction in restricted waters", ko:"제한수역에서의 선박 항적 예측" },
+      { en:"Navigator cognition and decision-making for MASS", ko:"항해사 인지 과정에 기반한 자율운항선박 의사결정" }
+    ],
+    tags:["COLREGs","ANFIS","CNN-LSTM","Ship domain","Cognitive science"] }
+];
+
+/* 공동 연구 주제 */
+const JOINT = {
+  en:"Joint research", ko:"공동 연구",
+  items:[
+    { en:"Verifying avoidance manoeuvres with CFD-based manoeuvring models", ko:"CFD 기반 조종운동 모델을 이용한 피항 조종 검증" },
+    { en:"Path-following and course-keeping control that carries out the avoidance manoeuvre in waves and current", ko:"파랑·조류 조건에서 피항 조종을 수행하는 경로추종·침로유지 제어" },
+    { en:"Cooperative collision avoidance for MASS in narrow waterways", ko:"협수로에서의 자율운항선박 협력 충돌회피" }
+  ]
+};
+
+const PROJECTS = [
+  { title:"[과제명]", agency:"[지원기관]", period:"[기간]" }
+];
+
+/* group: "pi" | "postdoc" | "phd" | "ms" | "alumni"
+   photo: "img/파일명.jpg" — 저장소의 img 폴더에 사진을 올리고 경로를 적으면 표시됩니다 (없으면 이니셜) */
+const MEMBERS = [
+  { group:"pi", ko:"김대정", name:"Daejeong Kim", role:"Assistant Professor", roleKo:"조교수",
+    field:"Ocean Engineering · Ship guidance, navigation and control; CFD simulation of floating-body motion and manoeuvring, gas dispersion",
+    fieldKo:"해양공학 · 선박 유도항법제어, 전산유체역학(CFD) 시뮬레이션(해양부유체 운동/조종, 가스 누출)",
+    office:"Room 415", lab:"Room 414", tel:"+82-51-410-4245", email:"kdj4907@kmou.ac.kr", photo:"",
+    link:"https://www.kmou.ac.kr/nav/na/ntt/selectNttList.do?mi=5446&bbsId=10003944",
+    education:[
+      ["2022.11","Ph.D. in Ocean Engineering, Dept. of Naval Architecture, Ocean & Marine Engineering, University of Strathclyde, UK"],
+      ["2020.08","M.Eng. in Navigation (Maritime Safety Technology), Korea Maritime & Ocean University"],
+      ["2013.01","B.Eng. in Navigation (Ship Operation Management), Korea Maritime & Ocean University"]
+    ],
+    career:[
+      ["2023.09–","Assistant Professor, Division of Navigation Convergence Studies, KMOU"],
+      ["2023.03–08","Lecturer, Dept. of Maritime AI & Security, KMOU"],
+      ["2023.01–08","Research Professor, Research Institute of Maritime Industry, KMOU"],
+      ["2022.02–12","Researcher, University of Strathclyde"],
+      ["2018.04–2020.10","Instructor and deck officer, KMOU training ship (Master Mariner licence)"],
+      ["2014.10–2018.03","Deck officer, Hyundai LNG Shipping (LNGC)"],
+      ["2013.04–2014.09","Deck officer, Hyundai Merchant Marine (VLCC, LNGC)"]
+    ],
+    tags:["CFD","Manoeuvring","GNC","MASS"] },
+  { group:"pi", ko:"이희진", name:"Heejin Lee", role:"Assistant Professor", roleKo:"조교수",
+    field:"Maritime Engineering · Collision avoidance, autonomous ships, artificial intelligence, cognitive science",
+    fieldKo:"해사공학 · 충돌회피, 자율운항선박, 인공지능, 인지과학",
+    office:"Room 210", lab:"Room 211", tel:"+82-51-410-4226", email:"hj1911@kmou.ac.kr", photo:"",
+    link:"https://www.kmou.ac.kr/navigation/na/ntt/selectNttList.do?mi=5883&bbsId=10005065",
+    education:[
+      ["2022.03","Ph.D. in Engineering, Dept. of Maritime Engineering, Kyushu University, Japan"],
+      ["2018.08","M.Eng., Dept. of Maritime Transportation System, Mokpo National Maritime University"],
+      ["2009.02","B.Eng., Division of Maritime Transportation System, Mokpo National Maritime University"]
+    ],
+    career:[
+      ["2025.09–","Assistant Professor, Division of Navigation Convergence Studies, KMOU"],
+      ["2024.06–2025.08","Professor, Korea Institute of Maritime and Fisheries Technology"],
+      ["2022.04–2024.05","Research Professor, Pukyong National University"],
+      ["2016.01–2019.02","Teaching Assistant, Mokpo National Maritime University"],
+      ["2014.07–2015.11","Deck officer, H-Line Shipping (LNGC)"],
+      ["2009.03–2014.06","Deck officer, Hanjin Shipping (container, bulk, LNGC)"]
+    ],
+    tags:["Collision avoidance","MASS","AI","Cognitive science"] },
+  { group:"ms", ko:"김송현", name:"Woody Kim", role:"M.S. student", interest:"충돌 회피, AI", email:"woodykim89@g.kmou.ac.kr", photo:"" },
+  { group:"ms", ko:"김종윤", name:"[English name]", role:"M.S. student", interest:"[관심분야]", email:"", photo:"" },
+  { group:"ms", ko:"이형훈", name:"[English name]", role:"M.S. student", interest:"[관심분야]", email:"", photo:"" },
+  { group:"ms", ko:"황주원", name:"[English name]", role:"M.S. student", interest:"[관심분야]", email:"", photo:"" }
+];
+
+/* 논문·특허 목록
+   type  : "journal" | "conference" | "patent"
+   index : "SCIE" | "SCOPUS" | "KCI"  (학술지만)
+   jcr   : 게재 당시 학술지의 JCR 백분위(%). 예) 7.4  → 상위 10% 이내로 집계
+           모르면 ""로 비워 둡니다(집계에서 '미입력'으로 표시).
+   venue : 첫 쉼표 앞부분이 학술지명으로 인식되어 통계에 쓰입니다.
+   authors: 연구실 구성원은 **이름** 으로 감싸면 굵게 표시됩니다 */
+const PUBS = [
+  { year:2025, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, & Namgung, H.",
+    title:"A CDC-ANFIS-based model for assessing ship collision risk in autonomous navigation",
+    venue:"Journal of Marine Science and Engineering, 13(8), 1492", link:"" },
+  { year:2025, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, & Kim, D.",
+    title:"Navigating narrow waterways: A quantitative study on timing of stand-on ship actions for cooperative collision avoidance for MASS",
+    venue:"Ocean Engineering, 322, 120400", link:"" },
+  { year:2024, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, & Park, D. J.",
+    title:"Collision evasive action timing for MASS using CNN-LSTM-based ship trajectory prediction in restricted area",
+    venue:"Ocean Engineering, 294, 116766", link:"" },
+  { year:2023, type:"journal", index:"SCIE", jcr:"", authors:"Song, S., **Kim, D.**, Demirel, Y. K., & Yang, J.",
+    title:"An advanced prediction method of ship resistance with heterogeneous hull roughness",
+    venue:"Ocean Engineering, 279, 114602", link:"" },
+  { year:2023, type:"journal", index:"KCI", jcr:"", authors:"**Kim, D.**, Zhang, M., & Yim, J.",
+    title:"Optimal route planning for maritime autonomous surface ships using a nonlinear model predictive control",
+    venue:"Journal of Navigation and Port Research, 47(2), 66–74", link:"" },
+  { year:2023, type:"journal", index:"KCI", jcr:"", authors:"**Kim, D.**, Lee, C., & Yim, J.",
+    title:"An evaluation technique for the path-following control performance of autonomous surface ships",
+    venue:"Journal of Navigation and Port Research, 47(1), 10–17", link:"" },
+  { year:2023, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, Song, S., Turnock, S., & Tezdogan, T.",
+    title:"Nonlinear URANS model for path-following control problem towards autonomous marine navigation under wave conditions",
+    venue:"Ocean Engineering, 270, 113681", link:"" },
+  { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, & Furukawa, Y.",
+    title:"Timing of stand-on ship actions for cooperative collision avoidance under calm water condition",
+    venue:"Ocean Engineering, 263, 112340", link:"" },
+  { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, & Park, D. J.",
+    title:"Analysis of thermal characteristics of MEMS sensors for measuring the rolling period of maritime autonomous surface ships",
+    venue:"Journal of Marine Science and Engineering, 10(7), 859", link:"" },
+  { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, & Park, D. J.",
+    title:"Analysis of navigator decision making through cognitive science for the presentation of a collision-avoidance algorithm for MASSs",
+    venue:"Journal of Marine Science and Engineering, 10(10), 1420", link:"" },
+  { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, & Park, D. J.",
+    title:"SASD modeling using an ANFIS to prevent the collision of MASS in restricted areas",
+    venue:"Journal of Marine Science and Engineering, 10(7), 961", link:"" },
+  { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, Yim, J., Song, S., Demirel, Y. K., & Tezdogan, T.",
+    title:"A systematic investigation on the manoeuvring performance of a ship performing low-speed manoeuvres in adverse weather conditions using CFD",
+    venue:"Ocean Engineering, 263, 112364", link:"" },
+  { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, Tezdogan, T., & Incecik, A.",
+    title:"A high-fidelity CFD-based model for the prediction of ship manoeuvrability in currents",
+    venue:"Ocean Engineering, 256, 111492", link:"" },
+  { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, Tezdogan, T., & Incecik, A.",
+    title:"Hydrodynamic analysis of ship manoeuvrability in shallow water using high-fidelity URANS computations",
+    venue:"Applied Ocean Research, 123, 103176", link:"" },
+  { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, & Tezdogan, T.",
+    title:"CFD-based hydrodynamic analyses of ship course keeping control and turning performance in irregular waves",
+    venue:"Ocean Engineering, 248, 110808", link:"" },
+  { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, Song, S., Sant, T., Demirel, Y. K., & Tezdogan, T.",
+    title:"Nonlinear URANS model for evaluating course keeping and turning capabilities of a vessel with propulsion system failure in waves",
+    venue:"International Journal of Naval Architecture and Ocean Engineering, 14, 100425", link:"" },
+  { year:2021, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, Furukawa, Y., & Park, D. J.",
+    title:"Seafarers' awareness-based domain modelling in restricted areas",
+    venue:"The Journal of Navigation, 74(5), 1172–1188", link:"" },
+  { year:2021, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, Song, S., Jeong, B., Tezdogan, T., & Incecik, A.",
+    title:"Unsteady RANS CFD simulations of ship manoeuvrability and course keeping control under various wave height conditions",
+    venue:"Applied Ocean Research, 117, 102940", link:"" },
+  { year:2021, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, Song, S., Jeong, B., & Tezdogan, T.",
+    title:"Numerical evaluation of a ship's manoeuvrability and course keeping control under various wave conditions using CFD",
+    venue:"Ocean Engineering, 237, 109615", link:"" },
+  { year:2021, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, Song, S., & Tezdogan, T.",
+    title:"Free running CFD simulations to investigate ship manoeuvrability in waves",
+    venue:"Ocean Engineering, 236, 109567", link:"" }
+];
+
+/* 수상 — year, title(영문), titleKo, who(수상자), from(수여기관·학회) */
+const AWARDS = [
+  { year:"2025", title:"[Award title]", titleKo:"[수상명]", who:"[수상자]", from:"[수여기관 · 학회]" },
+  { year:"2024", title:"[Award title]", titleKo:"[수상명]", who:"[수상자]", from:"[수여기관 · 학회]" }
+];
+
+const NEWS = [
+  { date:"2026-10-09", en:"FINT website launched.", ko:"FINT 연구실 홈페이지를 열었습니다." },
+  { date:"2025-09-01", en:"[News item in English]", ko:"[국문 소식]" }
+];
+
+/* =========================================================
+   아래는 화면을 그리는 코드입니다. 보통은 건드릴 필요가 없습니다.
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const bold = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+
+document.title = `${LAB.name} · ${LAB.full}`;
+$("#lab-full").textContent = `${LAB.full} · KMOU`;
+$("#footer-name").textContent = `${LAB.name} · ${LAB.full}`;
+$("#year").textContent = new Date().getFullYear();
+$("#hero-univ").textContent = `${LAB.univ} · ${LAB.division}`;
+$("#hero-title").textContent = LAB.full;
+$("#hero-lead").textContent = LAB.lead;
+$("#hero-ko").textContent = LAB.leadKo;
+$("#about-en").innerHTML = LAB.aboutEn.map(p => `<p>${esc(p)}</p>`).join("");
+$("#about-ko").innerHTML = LAB.aboutKo.map(p => `<p>${esc(p)}</p>`).join("");
+
+/* ---------- 집계 ---------- */
+const journals = PUBS.filter(p => p.type === "journal");
+const scie = journals.filter(p => p.index === "SCIE");
+const band = p => { const v = parseFloat(p.jcr); return isNaN(v) ? "none" : v <= 10 ? "top10" : v <= 20 ? "top20" : "over20"; };
+const BANDS = [
+  ["top10","JCR top 10%","JCR 상위 10% 이내","#0F2B3A"],
+  ["top20","JCR 10–20%","JCR 10~20%","#4A7F97"],
+  ["over20","JCR beyond 20%","JCR 20% 초과","#9DBFCC"],
+  ["none","Percentile not entered","백분위 미입력","#DDEAEF"]
+];
+const bandCount = k => scie.filter(p => band(p) === k).length;
+
+const STATS = [
+  { n: scie.length, en:"SCIE papers", ko:"SCIE 논문", href:"#metrics" },
+  { n: bandCount("top10"), en:"in JCR 5% journals", ko:"JCR 상위 5% 이내", href:"#metrics" },
+  { n: journals.filter(p => p.index === "KCI").length, en:"KCI papers", ko:"KCI 논문" },
+  { n: PUBS.filter(p => p.type === "patent").length, en:"Patents", ko:"특허" },
+  { n: AWARDS.filter(a => !a.title.startsWith("[")).length, en:"Awards", ko:"수상", href:"#awards" }
+];
+$("#stats").innerHTML = STATS.filter((s,i) => i < 4 || s.n > 0).map(s =>
+  `<${s.href ? `a href="${s.href}"` : "div"} class="stat"><b>${s.n}</b><span>${s.en}<span class="ko">${s.ko}</span></span></${s.href ? "a" : "div"}>`).join("");
+const notEntered = bandCount("none");
+$("#stats-note").innerHTML = `Counted from the publication list. <a href="#metrics">Publication metrics</a>` +
+  (notEntered ? ` · JCR percentile not yet entered for ${notEntered} paper${notEntered > 1 ? "s" : ""}.` : "") +
+  `<br><span class="ko">논문 목록을 기준으로 자동 집계됩니다.${notEntered ? ` JCR 백분위가 입력되지 않은 논문 ${notEntered}편.` : ""}</span>`;
+$("#pub-summary").textContent = `${scie.length} SCIE papers` +
+  (bandCount("top10") ? ` (${bandCount("top10")} in JCR top 10% journals)` : "") +
+  ` · ${journals.filter(p => p.index === "KCI").length} KCI papers` +
+  (PUBS.some(p => p.type === "patent") ? ` · ${PUBS.filter(p => p.type === "patent").length} patents` : "");
+
+/* ---------- 연구 분야 ---------- */
+const piByKo = ko => MEMBERS.find(m => m.group === "pi" && m.ko === ko);
+$("#home-areas").innerHTML = AREAS.map(a => {
+  const pi = piByKo(a.lead);
+  return `<div class="area-mini"><strong>${esc(a.en)}</strong><span class="ko">${esc(a.ko)}</span><em>${pi ? `Prof. ${esc(pi.name)} · ${esc(pi.ko)} 교수` : ""}</em></div>`;
+}).join("");
+$("#areas").innerHTML = AREAS.map(a => {
+  const pi = piByKo(a.lead);
+  return `<article class="area">
+    <h3>${esc(a.en)}</h3>
+    <p class="ko-title">${esc(a.ko)}</p>
+    <p class="lead-by">${pi ? `Prof. ${esc(pi.name)} · ${esc(pi.ko)} 교수` : ""}</p>
+    <p>${esc(a.summary)}</p>
+    <p class="ko">${esc(a.summaryKo)}</p>
+    <ul style="margin-top:16px">${a.topics.map(t => `<li>${esc(t.en)}<span class="ko">${esc(t.ko)}</span></li>`).join("")}</ul>
+    <div class="tags">${a.tags.map(g => `<span>${esc(g)}</span>`).join("")}</div>
+  </article>`;
+}).join("");
+$("#joint").innerHTML = `<h2>${esc(JOINT.en)}</h2><p class="ko">${esc(JOINT.ko)}</p>
+  <ul>${JOINT.items.map(i => `<li><strong>${esc(i.en)}</strong><span class="ko">${esc(i.ko)}</span></li>`).join("")}</ul>`;
+$("#projects").innerHTML = PROJECTS.map(p => `<tr><td>${esc(p.title)}</td><td>${esc(p.agency)}</td><td>${esc(p.period)}</td></tr>`).join("");
+
+/* ---------- 구성원 ---------- */
+const initials = m => (m.ko && !m.ko.startsWith("[") ? m.ko.slice(0,1) : "·");
+const avatar = m => `<div class="avatar">${m.photo ? `<img src="${esc(m.photo)}" alt="${esc(m.ko)}">` : esc(initials(m))}</div>`;
+const GROUPS = [["pi","Advisors","지도교수"],["postdoc","Postdoctoral researchers","박사후연구원"],["phd","Ph.D. students","박사과정"],["ms","M.S. students","석사과정"],["alumni","Alumni","졸업생"]];
+$("#members-list").innerHTML = GROUPS.map(([key,en,ko]) => {
+  const list = MEMBERS.filter(m => m.group === key);
+  if (!list.length) return "";
+  if (key === "pi") return `<div class="group"><h2>${en} <span class="ko">${ko}</span></h2>${list.map(m => `
+    <div class="pi">${avatar(m)}
+      <div>
+        <p class="name">${esc(m.ko)} <span class="ko">${esc(m.name)}</span></p>
+        <p class="role">${esc(m.role)} · ${esc(LAB.division)}<br>${esc(m.roleKo)} · 항해융합학부</p>
+        <p class="field">${esc(m.field)}<br><span class="ko">${esc(m.fieldKo)}</span></p>
+        <div class="tags">${(m.tags||[]).map(g => `<span>${esc(g)}</span>`).join("")}</div>
+        <dl>
+          <dt>Office</dt><dd>${esc(LAB.building)} ${esc(m.office)}</dd>
+          <dt>Lab</dt><dd>${esc(LAB.building)} ${esc(m.lab)}</dd>
+          <dt>Tel</dt><dd>${esc(m.tel)}</dd>
+          <dt>E-mail</dt><dd><a href="mailto:${esc(m.email)}">${esc(m.email)}</a></dd>
+        </dl>
+        <div class="cols">
+          <div><h4>Education</h4><ul>${m.education.map(([d,t]) => `<li><b>${esc(d)}</b>${esc(t)}</li>`).join("")}</ul></div>
+          <div><h4>Career</h4><ul>${m.career.map(([d,t]) => `<li><b>${esc(d)}</b>${esc(t)}</li>`).join("")}</ul></div>
+        </div>
+        ${m.link ? `<p class="links"><a href="${esc(m.link)}" target="_blank" rel="noopener">Faculty page at KMOU</a></p>` : ""}
+      </div>
+    </div>`).join("")}</div>`;
+  return `<div class="group"><h2>${en} <span class="ko">${ko}</span></h2><div class="people">${list.map(m => `
+    <div class="person">${avatar(m)}
+      <div><p class="name">${esc(m.ko)} <span class="ko">${esc(m.name)}</span></p>
+      <p class="role">${esc(m.role)}</p>
+      ${m.interest ? `<p class="interest">${esc(m.interest)}</p>` : ""}
+      ${m.email ? `<a href="mailto:${esc(m.email)}">${esc(m.email)}</a>` : ""}</div>
+    </div>`).join("")}</div></div>`;
+}).join("");
+
+/* ---------- 논문 목록 ---------- */
+let filter = "all";
+const FILTERS = [
+  ["all","All · 전체", p => true],
+  ["SCIE","SCIE", p => p.index === "SCIE"],
+  ["top10","JCR top 10%", p => p.index === "SCIE" && band(p) === "top10"],
+  ["top20","JCR 10–20%", p => p.index === "SCIE" && band(p) === "top20"],
+  ["over20","JCR beyond 20%", p => p.index === "SCIE" && band(p) === "over20"],
+  ["KCI","KCI · 국내", p => p.index === "KCI"],
+  ["conference","Conference · 학술대회", p => p.type === "conference"],
+  ["patent","Patent · 특허", p => p.type === "patent"]
+];
+function renderPubs(){
+  $("#filters").innerHTML = FILTERS.map(([k,l,f]) => [k,l,PUBS.filter(f).length])
+    .filter(([k,,n]) => n > 0)
+    .map(([k,l,n]) => `<button data-k="${k}" aria-pressed="${filter===k}">${l} (${n})</button>`).join("");
+  const f = FILTERS.find(x => x[0] === filter)[2];
+  const list = PUBS.filter(f);
+  const years = [...new Set(list.map(p => p.year))].sort((a,b) => b-a);
+  const badges = p => [
+    p.type === "patent" ? `<span class="kind patent">Patent</span>` : "",
+    p.type === "conference" ? `<span class="kind">Conference</span>` : "",
+    p.index ? `<span class="kind">${esc(p.index)}</span>` : "",
+    p.index === "SCIE" && band(p) !== "none" ? `<span class="kind jcr">JCR ${esc(p.jcr)}%</span>` : ""
+  ].join("");
+  $("#pubs").innerHTML = years.map(y => `
+    <div class="year"><strong>${y}</strong><div>${list.filter(p => p.year===y).map(p => `
+      <div class="pub">
+        <p class="t">${badges(p)}${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title)}</p>
+        <p class="a">${bold(p.authors)}</p>
+        <p class="v">${esc(p.venue)}</p>
+      </div>`).join("")}</div></div>`).join("");
+}
+$("#filters").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  filter = b.dataset.k; renderPubs();
+});
+renderPubs();
+
+/* ---------- 논문 통계 ---------- */
+const journalOf = p => p.venue.split(",")[0].trim();
+(function metrics(){
+  // 학술지별
+  const counts = {};
+  scie.forEach(p => counts[journalOf(p)] = (counts[journalOf(p)]||0)+1);
+  let rows = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+  if (rows.length > 6){ const other = rows.slice(5).reduce((s,r) => s+r[1], 0); rows = rows.slice(0,5).concat([["Other journals", other]]); }
+  const ramp = ["#0F2B3A","#2A5A74","#5A8FA6","#93BDCB","#CFE2E9","#E6EEF1"];
+  const total = scie.length, R = 100, SW = 34, gap = 2/R;
+  let a0 = -Math.PI/2;
+  const arcs = rows.map((r,i) => {
+    const span = r[1]/total*2*Math.PI, a1 = a0 + span;
+    const s = a0 + gap/2, e = a1 - gap/2;
+    const p = t => [120 + R*Math.cos(t), 120 + R*Math.sin(t)];
+    const [x0,y0] = p(s), [x1,y1] = p(Math.max(e, s+0.001));
+    const d = span >= 2*Math.PI - 0.001
+      ? `M${120+R} 120A${R} ${R} 0 1 1 ${120-R} 120A${R} ${R} 0 1 1 ${120+R} 120`
+      : `M${x0} ${y0}A${R} ${R} 0 ${span > Math.PI ? 1 : 0} 1 ${x1} ${y1}`;
+    a0 = a1;
+    return `<path d="${d}" fill="none" stroke="${ramp[i]}" stroke-width="${SW}"><title>${esc(r[0])}: ${r[1]} (${(r[1]/total*100).toFixed(1)}%)</title></path>`;
+  }).join("");
+  $("#donut").innerHTML = `
+    <svg viewBox="0 0 240 240" role="img" aria-label="SCIE papers by journal">
+      ${arcs}
+      <text x="120" y="114" text-anchor="middle" font-size="40" font-weight="600" fill="#0F2B3A" font-family="inherit">${total}</text>
+      <text x="120" y="140" text-anchor="middle" font-size="13" fill="#58707C" font-family="inherit">SCIE papers</text>
+    </svg>
+    <table class="jtable">
+      <thead><tr><th>Journal · 학술지</th><th class="n">Papers</th><th class="n">Share</th></tr></thead>
+      <tbody>${rows.map((r,i) => `<tr><td><span class="sw" style="background:${ramp[i]}"></span>${esc(r[0])}</td><td class="n">${r[1]}</td><td class="n">${(r[1]/total*100).toFixed(1)}%</td></tr>`).join("")}</tbody>
+    </table>`;
+
+  $("#home-donut").innerHTML = $("#donut").innerHTML;   // 홈에도 같은 차트 표시
+
+  // 연도별
+  const ys = scie.map(p => p.year), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const years = []; for (let y = y0; y <= y1; y++) years.push([y, scie.filter(p => p.year === y).length]);
+  const max = Math.max(...years.map(r => r[1]), 1), bw = 44, gapx = 22, left = 10, h = 170, top = 28;
+  const w = left*2 + years.length*(bw+gapx) - gapx;
+  $("#bars").innerHTML = `<svg width="${w*1.2}" height="${(h+top+30)*1.2}" viewBox="0 0 ${w} ${h+top+30}" role="img" aria-label="SCIE papers by year">
+    <line x1="${left}" y1="${top+h}" x2="${w-left}" y2="${top+h}" stroke="#A7C3CF"/>
+    ${years.map(([y,n],i) => { const x = left + i*(bw+gapx), bh = n/max*h; return `
+      <rect x="${x}" y="${top+h-bh}" width="${bw}" height="${bh}" rx="3" fill="#2A5A74"><title>${y}: ${n}</title></rect>
+      <text x="${x+bw/2}" y="${top+h-bh-8}" text-anchor="middle" font-size="14" font-weight="600" fill="#0F2B3A" font-family="inherit">${n}</text>
+      <text x="${x+bw/2}" y="${top+h+20}" text-anchor="middle" font-size="13" fill="#58707C" font-family="inherit">${y}</text>`; }).join("")}
+  </svg>`;
+
+  // JCR 백분위 분포
+  const bandRows = BANDS.map(([k,en,ko,col]) => [k,en,ko,col,bandCount(k)]);
+  $("#band").innerHTML = `
+    <div class="band" role="img" aria-label="JCR percentile distribution">${bandRows.filter(r => r[4] > 0).map(r =>
+      `<div style="flex:${r[4]};background:${r[3]};color:${r[0]==="none"||r[0]==="over20" ? "#0F2B3A" : "#fff"}" title="${esc(r[1])}: ${r[4]}">${r[4]}</div>`).join("")}</div>
+    <div class="band-legend">${bandRows.map(r => `<span><span class="sw" style="background:${r[3]};border:1px solid #A7C3CF"></span>${esc(r[1])} · ${esc(r[2])}: ${r[4]}</span>`).join("")}</div>
+    ${notEntered ? `<p class="stats-note">JCR percentile has not been entered for ${notEntered} papers. Enter each journal's JCR percentile for the year of publication in the publication list and this chart updates.<br><span class="ko">논문 ${notEntered}편의 JCR 백분위가 아직 입력되지 않았습니다. 논문 목록에 게재 연도의 학술지 JCR 백분위를 입력하면 자동으로 반영됩니다.</span></p>` : ""}`;
+})();
+
+/* ---------- 수상·소식 ---------- */
+$("#awards-list").innerHTML = AWARDS.map(a => `<li><span class="y">${esc(a.year)}</span><div>${esc(a.title)}<span class="ko">${esc(a.titleKo)}</span><span class="sub">${esc(a.who)} · ${esc(a.from)}</span></div></li>`).join("");
+const newsItem = n => `<li><time datetime="${esc(n.date)}">${esc(n.date.replaceAll("-","."))}</time><div>${esc(n.en)}<span class="ko">${esc(n.ko)}</span></div></li>`;
+const sortedNews = [...NEWS].sort((a,b) => b.date.localeCompare(a.date));
+$("#news-list").innerHTML = sortedNews.map(newsItem).join("");
+$("#home-news").innerHTML = sortedNews.slice(0,3).map(newsItem).join("");
+
+/* ---------- 연락처·지원 양식 ---------- */
+const pis = MEMBERS.filter(m => m.group === "pi");
+$("#contact-cards").innerHTML = `
+  <div class="contact-card">
+    <h3>${esc(LAB.name)} laboratory</h3>
+    <dl>
+      <dt>Address</dt><dd>727 Taejong-ro, Yeongdo-gu, Busan 49112, Republic of Korea<br><span class="ko">부산광역시 영도구 태종로 727 국립한국해양대학교</span></dd>
+      <dt>Lab</dt><dd>${esc(LAB.building)}, ${esc(LAB.labRooms)}<br><span class="ko">${esc(LAB.buildingKo)} ${esc(LAB.labRoomsKo)}</span></dd>
+    </dl>
+  </div>` + pis.map(m => `
+  <div class="contact-card">
+    <h3>Prof. ${esc(m.name)} <span class="ko">${esc(m.ko)}</span></h3>
+    <dl>
+      <dt>Office</dt><dd>${esc(LAB.building)} ${esc(m.office)}</dd>
+      <dt>Tel</dt><dd>${esc(m.tel)}</dd>
+      <dt>E-mail</dt><dd><a href="mailto:${esc(m.email)}">${esc(m.email)}</a></dd>
+    </dl>
+  </div>`).join("");
+$("#recruit-text").textContent = LAB.recruit;
+$("#apply-hint").textContent = LAB.formEndpoint
+  ? "Sent directly from this page. · 이 화면에서 바로 전송됩니다."
+  : "Your mail app opens with the message filled in; press send there. · 메일 앱이 열리고 내용이 채워집니다. 거기서 보내기를 누르면 됩니다.";
+$("#apply").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.target, st = $("#apply-status");
+  if (!f.reportValidity()) return;
+  const d = Object.fromEntries(new FormData(f).entries());
+  const subject = `[FINT] Application enquiry – ${d.name}`;
+  const body = `Name: ${d.name}\nE-mail: ${d.email}\nAffiliation / status: ${d.affiliation}\nArea of interest: ${d.area}\n\n${d.message}`;
+  if (LAB.formEndpoint){
+    st.textContent = "Sending…";
+    try{
+      const r = await fetch(LAB.formEndpoint, { method:"POST", headers:{ "Accept":"application/json", "Content-Type":"application/json" },
+        body: JSON.stringify({ ...d, _subject: subject }) });
+      st.textContent = r.ok ? "Sent. We will get back to you by e-mail. · 전송되었습니다." : "Could not send. Please e-mail the advisors directly. · 전송에 실패했습니다. 교수님께 직접 메일을 보내 주세요.";
+      if (r.ok) f.reset();
+    } catch { st.textContent = "Could not send. Please e-mail the advisors directly. · 전송에 실패했습니다. 교수님께 직접 메일을 보내 주세요."; }
+  } else {
+    location.href = `mailto:${pis.map(m => m.email).join(",")}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    st.textContent = "If your mail app did not open, e-mail the advisors directly. · 메일 앱이 열리지 않으면 교수님께 직접 메일을 보내 주세요.";
+  }
+});
+
+/* ---------- 메뉴 이동 ---------- */
+const SECTIONS = ["home","about","research","members","publications","metrics","awards","news","contact"];
+function route(){
+  const id = SECTIONS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "home";
+  SECTIONS.forEach(s => document.getElementById(s).classList.toggle("active", s===id));
+  const navId = id === "metrics" ? "publications" : id;
+  document.querySelectorAll("nav a").forEach(a => {
+    if (a.getAttribute("href") === "#"+navId) a.setAttribute("aria-current","page");
+    else a.removeAttribute("aria-current");
+  });
+  $("#site-nav").classList.remove("open"); $(".menu-btn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange", route);
+route();
+$(".menu-btn").addEventListener("click", () => {
+  const open = $("#site-nav").classList.toggle("open");
+  $(".menu-btn").setAttribute("aria-expanded", open);
+});
+
+/* ---------- 첫 화면 레이더 (임시) ---------- */
+(function radar(){
+  const cv = $("#radar"), ctx = cv.getContext("2d");
+  const css = getComputedStyle(document.documentElement), C = k => css.getPropertyValue(k).trim();
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W = 0, R = 0;
+  function size(){ const d = devicePixelRatio||1; W = cv.clientWidth; cv.width = cv.height = W*d; ctx.setTransform(d,0,0,d,0,0); R = W/2; }
+  const ships = Array.from({length:9}, (_,i) => ({
+    x: Math.cos(i*0.7)*(0.25+0.6*((i*37)%10)/10),
+    y: Math.sin(i*1.3)*(0.25+0.6*((i*53)%10)/10),
+    c: (i*41)%360 * Math.PI/180, v: 0.0004 + ((i*7)%5)*0.00012, seen: 0, track: []
+  }));
+  ships[0].focus = true; ships[1].focus = true;
+  const coast = [[-1,-0.35],[-0.72,-0.42],[-0.55,-0.62],[-0.38,-0.7],[-0.3,-0.95],[-0.2,-1],[-1,-1]];
+  let ang = 0, last = performance.now();
+  function frame(now){
+    const dt = Math.min(50, now-last); last = now;
+    if (cv.clientWidth === 0){ requestAnimationFrame(frame); return; }
+    if (cv.clientWidth !== W) size();
+    ctx.clearRect(0,0,W,W); ctx.save(); ctx.translate(R,R);
+    ctx.fillStyle = "rgba(167,195,207,.18)";
+    ctx.beginPath(); coast.forEach(([x,y],i) => i ? ctx.lineTo(x*R,y*R) : ctx.moveTo(x*R,y*R)); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#3E6577"; ctx.lineWidth = 1;
+    for (let k=1;k<=4;k++){ ctx.beginPath(); ctx.arc(0,0,R*k/4.2,0,7); ctx.stroke(); }
+    ctx.globalAlpha = .35;
+    for (let a=0;a<12;a++){ ctx.beginPath(); ctx.moveTo(0,0); const t=a*Math.PI/6; ctx.lineTo(Math.cos(t)*R,Math.sin(t)*R); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+    if (!still){
+      if (ctx.createConicGradient){
+        const g = ctx.createConicGradient(ang-0.9,0,0);
+        g.addColorStop(0,"rgba(143,208,181,0)"); g.addColorStop(0.14,"rgba(143,208,181,.22)"); g.addColorStop(0.1433,"rgba(143,208,181,0)");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0,0,R,0,7); ctx.fill();
+      }
+      ctx.strokeStyle = C("--echo"); ctx.globalAlpha = .8;
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(ang)*R, Math.sin(ang)*R); ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    ships.forEach(s => {
+      if (!still){
+        s.x += Math.sin(s.c)*s.v*dt/16; s.y -= Math.cos(s.c)*s.v*dt/16;
+        if (Math.hypot(s.x,s.y) > 0.95){ s.c += Math.PI; s.track = []; }
+        const a = (Math.atan2(s.y,s.x)+2*Math.PI)%(2*Math.PI), sw = (ang%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
+        let diff = sw - a; if (diff<0) diff += 2*Math.PI;
+        if (diff < 0.08){ s.seen = 1; s.track.push([s.x,s.y]); if (s.track.length>14) s.track.shift(); }
+        s.seen = Math.max(0.25, s.seen - dt/5200);
+      } else s.seen = 1;
+      const px = s.x*R, py = s.y*R, col = s.focus ? C("--signal") : C("--echo");
+      ctx.fillStyle = col;
+      s.track.forEach(([tx,ty],i) => { ctx.globalAlpha = (i/s.track.length)*.5*s.seen; ctx.beginPath(); ctx.arc(tx*R,ty*R,1.4,0,7); ctx.fill(); });
+      ctx.globalAlpha = s.seen;
+      ctx.save(); ctx.translate(px,py); ctx.rotate(s.c);
+      ctx.beginPath(); ctx.moveTo(0,-7); ctx.lineTo(4.5,5); ctx.lineTo(-4.5,5); ctx.closePath();
+      ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,-7); ctx.lineTo(0,-7-s.v*60000); ctx.stroke();
+      ctx.restore(); ctx.globalAlpha = 1;
+    });
+    const [a,b] = ships;
+    ctx.setLineDash([4,5]); ctx.strokeStyle = C("--signal"); ctx.globalAlpha = .6;
+    ctx.beginPath(); ctx.moveTo(a.x*R,a.y*R); ctx.lineTo(b.x*R,b.y*R); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1; ctx.restore();
+    ang += dt/1400;
+    if (!still) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  addEventListener("hashchange", () => { if (still) setTimeout(() => requestAnimationFrame(frame), 0); });
+})();
+</script>
+</body>
+</html>
