@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>FINT · Maritime Autonomy Science & Technology</title>
+<title>FINT · Fluid dynamics and Intelligent Navigation Technologies </title>
 <meta name="description" content="FINT (Fluid dynamics and Intelligent Navigation Technologies), a joint laboratory at Korea Maritime & Ocean University — ship hydrodynamics and control (CFD) and collision avoidance for autonomous ships.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -459,7 +459,7 @@ footer .left{display:flex;align-items:center;gap:14px}
 
 const LAB = {
   name: "FINT",
-  full: "Maritime Autonomy Science & Technology",
+  full: "Fluid dynamics and Intelligent Navigation Technologies",
   univ: "Korea Maritime & Ocean University",
   division: "Division of Navigation Convergence Studies",   // 항해융합학부 영문 표기 — 확인 후 수정
   building: "Maritime College Bldg.",                        // 해사대학관
