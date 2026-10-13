@@ -64,7 +64,7 @@ button{font:inherit;color:inherit}
 .hero{background:var(--sea);color:#fff}
 .photo{position:relative;height:min(74vh,58vw);min-height:420px;overflow:hidden;background:var(--sea)}
 .photo svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.photo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(to bottom,rgba(3,73,92,0),var(--sea));pointer-events:none}
+.photo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:16%;background:linear-gradient(to bottom,rgba(3,73,92,0),rgba(3,73,92,.55) 55%,var(--sea));pointer-events:none}
 /* 사진 위 해도 테두리 눈금 */
 .neat{position:absolute;top:18px;left:18px;right:18px;bottom:calc(.46 * clamp(96px,12.5vw,190px) + 26px);border:1px solid rgba(255,255,255,.75);pointer-events:none}
 .neat i{position:absolute;display:block}
@@ -314,8 +314,8 @@ footer .disclaimer{font-family:var(--serif);font-style:italic;text-align:right;m
   <!-- ================= 첫 화면 ================= -->
   <div class="hero">
     <div class="photo">
-      <svg id="hero-svg" viewBox="0 0 1068 619" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Aerial view of the Korea Maritime &amp; Ocean University campus on Achiseom at dusk, with two training ships at the pier">
-        <image id="hero-img" x="0" y="0" width="1068" height="619" preserveAspectRatio="xMidYMid slice"/>
+      <svg id="hero-svg" viewBox="0 0 1068 600" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Aerial view of the Korea Maritime &amp; Ocean University campus on Achiseom at dusk, with two training ships at the pier">
+        <image id="hero-img" x="0" y="0" width="1068" height="600" preserveAspectRatio="xMidYMid slice"/>
         <g id="hero-flow" aria-hidden="true"></g>
         <g id="hero-notes" class="notes" aria-hidden="true"></g>
       </svg>
@@ -454,7 +454,7 @@ const LAB = {
      - 비워 두면: 지원자의 메일 앱이 열리고 내용이 채워진 상태로 두 교수님 주소가 수신인에 들어갑니다. (설정 필요 없음)
      - Formspree 등 폼 서비스 주소를 넣으면 (예: "https://formspree.io/f/xxxxxxxx"): 사이트에서 바로 전송되고 교수님 메일로 도착합니다. */
   formEndpoint: "",
-  /* 첫 화면 사진: img 폴더의 사진 경로. 같은 구도의 고해상도 원본(가로 5380px 등)으로 바꾸면 더 선명해집니다.
+  /* 첫 화면 사진: img 폴더의 사진 경로. 가로 2560px 정도로 줄여 올리면 선명하면서도 빨리 열립니다.
      heroPhotoCaption: 사진 아래 설명 (사진 출처를 함께 적어 두세요) */
   heroPhoto: "img/campus.jpg",
   heroPhotoCaption: "Achiseom campus, Korea Maritime & Ocean University, with the training ships at the pier. Flow lines and labels are added illustrations.",
@@ -888,7 +888,7 @@ $("#foot-addr").textContent = `${LAB.building}, ${LAB.labRooms}, ${LAB.univ}`;
 $("#year").textContent = new Date().getFullYear();
 
 /* =========================================================
-   첫 화면 사진 위 그림 (좌표는 사진 1068×619 기준)
+   첫 화면 사진 위 그림 (좌표는 사진을 가로 1068로 줄였을 때 기준, 세로 600)
    - 흐름선: 실습선 주변을 지나는 물의 흐름 (천천히 움직임)
    - 주석: 아치섬, 실습선 부두
    ========================================================= */
@@ -900,12 +900,12 @@ $("#year").textContent = new Date().getFullYear();
 
   /* 흐름선: 앞바다(실습선 아래)와 부두 앞 수역(선미를 돌아 아래로 휘어짐) */
   const flow = $("#hero-flow");
-  [548, 566, 584, 602].forEach((y, i) => {
+  [532, 550, 568, 586].forEach((y, i) => {
     el("path", { class: "flowline", d: `M-20 ${y} C 250 ${y-8}, 500 ${y+8}, 750 ${y-4} S 1000 ${y-14}, 1090 ${y-18}`,
       "stroke-width": 1.1, opacity: .34 - i*.04, "stroke-dasharray": `${70 + i*12} ${170 - i*10}`,
       style: `animation-duration:${11 + i*2.5}s;animation-delay:-${i*3}s` }, flow);
   });
-  [452, 472, 492].forEach((y, i) => {
+  [430, 450, 470].forEach((y, i) => {
     el("path", { class: "flowline", d: `M-20 ${y} C 150 ${y+4}, 330 ${y+10}, 455 ${y+22} S 520 ${y+78}, 620 ${y+92}`,
       "stroke-width": 1, opacity: .26 - i*.04, "stroke-dasharray": `${54 + i*10} ${150}`,
       style: `animation-duration:${13 + i*2}s;animation-delay:-${i*4}s` }, flow);
@@ -914,8 +914,8 @@ $("#year").textContent = new Date().getFullYear();
   /* 주석: 표적 원 + 꺾인 지시선 + 이름 */
   const notes = $("#hero-notes");
   const NOTES = [
-    { at: [272, 128], path: [[272,128],[322,104],[412,104]], label: [418, 108], en: "Achiseom", ko: "아치섬" },
-    { at: [318, 420], path: [[318,420],[318,440],[236,440]], label: [228, 445], en: "Training ships", ko: "실습선 부두", anchor: "end" }
+    { at: [293, 124], path: [[293,124],[343,98],[433,98]], label: [439, 102], en: "Achiseom", ko: "아치섬" },
+    { at: [300, 386], path: [[300,386],[300,424],[214,424]], label: [206, 429], en: "Training ships", ko: "실습선 부두", anchor: "end" }
   ];
   NOTES.forEach(n => {
     const d = "M" + n.path.map(p => p.join(" ")).join(" L ");
