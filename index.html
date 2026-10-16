@@ -150,6 +150,12 @@ section{scroll-margin-top:72px}
 .joint ul{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:22px}
 .joint li{border-left:3px solid var(--magenta);padding:2px 0 2px 16px}
 .joint li .ko{font-size:14px;margin-top:4px}
+.joint-video{margin-top:36px}
+.joint-video video{display:block;width:100%;height:auto;aspect-ratio:1800/1000;background:var(--tint);border:1px solid var(--ink)}
+.joint-video figcaption{margin-top:12px;font-size:15px;max-width:72ch}
+.joint-video figcaption b{font-family:var(--serif);font-weight:500;font-size:19px}
+.joint-video figcaption p{margin-top:6px;color:var(--ink2)}
+.joint-video figcaption .ko{margin-top:4px;font-size:14px}
 .projects{margin-top:64px}
 .projects h3{font-size:24px;margin-bottom:16px}
 
@@ -541,7 +547,16 @@ const JOINT = {
     { en:"Verifying avoidance manoeuvres with CFD-based manoeuvring models", ko:"CFD 기반 조종운동 모델을 이용한 피항 조종 검증" },
     { en:"Path-following and course-keeping control that carries out the avoidance manoeuvre in waves and current", ko:"파랑·조류 조건에서 피항 조종을 수행하는 경로추종·침로유지 제어" },
     { en:"Cooperative collision avoidance for MASS in narrow waterways", ko:"협수로에서의 자율운항선박 협력 충돌회피" }
-  ]
+  ],
+  /* 공동 연구 영상 — video 폴더에 mp4(H.264)를 올리고 경로를 적습니다. 영상을 빼려면 src를 "" 로 비우세요. */
+  video: {
+    src: "video/scenario.mp4",
+    poster: "img/scenario_poster.jpg",
+    title: "Automatic scenario generation",
+    titleKo: "충돌회피 조우 시나리오 자동 생성",
+    caption: "Three generated encounters (5, 6 and 4 target ships) in which the own ship keeps to starboard within a ±2L route corridor. Manoeuvres are simulated with the MMG model of KVLCC2 (1:128 scale) and checked with CDC and ellipse verification; all three end with no contact.",
+    captionKo: "상대선 5척·6척·4척이 등장하는 조우 상황 3건을 자동으로 만들고, 자선이 ±2L 항로 폭 안에서 우현 변침으로 피항하는 과정을 MMG 조종운동 모델(KVLCC2, 1:128)로 모의한 뒤 CDC와 타원 검증으로 확인했습니다. 세 경우 모두 접촉 없이 통과합니다."
+  }
 };
 
 const PROJECTS = [
@@ -784,7 +799,25 @@ $("#areas").insertAdjacentHTML("beforeend", AREAS.map((a,i) => {
 }).join(""));
 $("#joint").innerHTML = `<div><h3>Where the two meet</h3><span class="ko">${esc(JOINT.ko)}</span></div>
   <div class="body"><p>${esc(JOINT.summary)}</p>${ko(JOINT.summaryKo)}
-  <ul>${JOINT.items.map(it => `<li>${esc(it.en)}${ko(it.ko)}</li>`).join("")}</ul></div>`;
+  <ul>${JOINT.items.map(it => `<li>${esc(it.en)}${ko(it.ko)}</li>`).join("")}</ul>
+  ${JOINT.video && JOINT.video.src ? `<figure class="joint-video">
+    <video src="${esc(JOINT.video.src)}" poster="${esc(JOINT.video.poster || "")}" muted loop playsinline controls preload="metadata"
+      aria-label="${esc(JOINT.video.title)}"></video>
+    <figcaption><b>${esc(JOINT.video.title)}</b>${blank(JOINT.video.titleKo) ? "" : ` <span class="small">${esc(JOINT.video.titleKo)}</span>`}
+      <p>${esc(JOINT.video.caption)}</p>${ko(JOINT.video.captionKo)}</figcaption>
+  </figure>` : ""}</div>`;
+/* 영상: 화면에 보일 때만 소리 없이 재생하고, 벗어나면 멈춥니다 (움직임 줄이기 설정이면 자동 재생하지 않음) */
+(function jointVideo(){
+  const v = document.querySelector(".joint-video video");
+  if (!v || matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+  let userPaused = false;
+  v.addEventListener("pause", () => { if (v.dataset.auto !== "1") userPaused = true; v.dataset.auto = ""; });
+  v.addEventListener("play", () => { userPaused = false; });
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting && !userPaused) v.play().catch(() => {});
+    else if (!e.isIntersecting && !v.paused){ v.dataset.auto = "1"; v.pause(); }
+  }, { threshold: 0.35 }).observe(v);
+})();
 $("#projects").innerHTML = realProjects.length ? `<h3>Projects <span class="ko" style="display:inline;margin-left:8px">수행 과제</span></h3>
   <div class="table-scroll"><table><thead><tr><th>Project</th><th>Funding</th><th>Period</th></tr></thead><tbody>${
     realProjects.map(p => `<tr><td>${esc(p.title)}</td><td>${esc(p.agency)}</td><td class="when">${esc(p.period)}</td></tr>`).join("")}</tbody></table></div>` : "";
