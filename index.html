@@ -1,10 +1,44 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>FINT · Fluid dynamics and Intelligent Navigation Technologies</title>
-<meta name="description" content="FINT (Fluid dynamics and Intelligent Navigation Technologies), a joint laboratory at Korea Maritime & Ocean University — ship hydrodynamics and control (CFD) and collision avoidance for autonomous ships.">
+<title>FINT 연구실 | 한국해양대학교 항해융합학부 · Fluid dynamics and Intelligent Navigation Technologies</title>
+<meta name="description" content="FINT(Fluid dynamics and Intelligent Navigation Technologies)는 국립한국해양대학교 항해융합학부 김대정·이희진 교수의 공동연구실입니다. 전산유체역학(CFD) 기반 선박 조종운동 해석과 선박 충돌회피·자율운항선박(MASS) 연구를 수행합니다.">
+<meta name="keywords" content="FINT, FINT 연구실, 한국해양대학교, 해양대, 항해융합학부, 김대정, 이희진, 선박 조종운동, 전산유체역학, CFD, 충돌회피, 자율운항선박, MASS, KMOU, collision avoidance, ship manoeuvring">
+<link rel="canonical" href="https://kmou-fint.github.io/">
+<meta name="robots" content="index, follow">
+<!-- 검색엔진 소유 확인 태그: 구글 서치 콘솔·네이버 서치어드바이저에서 받은 태그를 아래 두 줄 대신 붙여 넣으세요 -->
+<!-- <meta name="google-site-verification" content="여기에_구글_코드"> -->
+<!-- <meta name="naver-site-verification" content="여기에_네이버_코드"> -->
+<!-- 링크 공유(카카오톡·페이스북 등) 미리보기 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FINT Lab · KMOU">
+<meta property="og:title" content="FINT 연구실 | 한국해양대학교 항해융합학부">
+<meta property="og:description" content="CFD 기반 선박 조종운동 해석과 선박 충돌회피·자율운항선박 연구 — 김대정·이희진 교수 공동연구실">
+<meta property="og:url" content="https://kmou-fint.github.io/">
+<meta property="og:image" content="https://kmou-fint.github.io/img/og-image.jpg">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ResearchOrganization",
+  "name": "FINT (Fluid dynamics and Intelligent Navigation Technologies) Lab",
+  "alternateName": ["FINT 연구실", "FINT Lab"],
+  "url": "https://kmou-fint.github.io/",
+  "logo": "https://kmou-fint.github.io/img/kmou_logo.png",
+  "image": "https://kmou-fint.github.io/img/og-image.jpg",
+  "description": "FINT(Fluid dynamics and Intelligent Navigation Technologies)는 국립한국해양대학교 항해융합학부 김대정·이희진 교수의 공동연구실입니다. 전산유체역학(CFD) 기반 선박 조종운동 해석과 선박 충돌회피·자율운항선박(MASS) 연구를 수행합니다.",
+  "parentOrganization": { "@type": "CollegeOrUniversity", "name": "국립한국해양대학교 (Korea Maritime & Ocean University)", "url": "https://www.kmou.ac.kr" },
+  "address": { "@type": "PostalAddress", "streetAddress": "727 Taejong-ro, Yeongdo-gu", "addressLocality": "Busan", "postalCode": "49112", "addressCountry": "KR" },
+  "member": [
+    { "@type": "Person", "name": "김대정 (Daejeong Kim)", "jobTitle": "Assistant Professor", "email": "kdj4907@kmou.ac.kr" },
+    { "@type": "Person", "name": "이희진 (Heejin Lee)", "jobTitle": "Assistant Professor", "email": "hj1911@kmou.ac.kr" }
+  ],
+  "knowsAbout": ["Computational fluid dynamics", "Ship manoeuvring", "Collision avoidance", "Maritime autonomous surface ships", "COLREGs"]
+}
+</script>
 <link rel="icon" href="img/kmou_logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -372,12 +406,12 @@ footer .disclaimer{font-family:var(--serif);font-style:italic;text-align:right;m
       <div class="wrap">
         <div class="lockup">
           <span class="word" aria-hidden="true">FINT</span>
-          <h1 id="c-title"></h1>
+          <h1 id="c-title">Fluid dynamics and Intelligent Navigation Technologies</h1>
         </div>
         <div class="plate-text">
-          <p class="uni" id="c-uni"></p>
-          <p class="lead" id="c-lead"></p>
-          <p class="ko" id="c-ko"></p>
+          <p class="uni" id="c-uni">Division of Navigation Convergence Studies, Korea Maritime &amp; Ocean University<br>국립한국해양대학교 항해융합학부 공동연구실</p>
+          <p class="lead" id="c-lead">We link CFD-based analysis of how ships manoeuvre with collision-avoidance research, so that navigation decisions account for what each ship can actually do.</p>
+          <p class="ko" id="c-ko">전산유체역학(CFD) 기반의 선박 조종운동 해석과 충돌회피 연구를 연결해, 선박의 실제 운동 특성을 반영한 안전 운항 기술을 개발합니다.</p>
           <div class="actions">
             <a class="btn" href="#research">See our research</a>
             <a class="textlink" href="#contact">Join the lab</a>
@@ -755,7 +789,7 @@ if ("IntersectionObserver" in window){
 }
 
 /* ---------- 첫 화면 제목 상자 ---------- */
-document.title = `${LAB.name} · ${LAB.full}`;
+/* 브라우저 탭·검색 결과 제목은 <head>의 <title>을 그대로 씁니다 */
 $("#c-uni").innerHTML = `${esc(LAB.division)}, ${esc(LAB.univ)}<br>${esc(LAB.univKo)} ${esc(LAB.divisionKo)} 공동연구실`;
 $("#c-title").textContent = LAB.full;
 $("#c-lead").textContent = LAB.lead;
