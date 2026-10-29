@@ -844,7 +844,7 @@ const DRAW = {
       <text x="56" y="88" font-family="Spectral, serif" font-style="italic" font-size="12" fill="var(--magenta)">090°</text>
     </svg>`
 };
-$("#areas").insertAdjacentHTML("beforeend", AREAS.map((a,i) => {
+$("#areas").innerHTML = `<span class="cl" aria-hidden="true" title="Centre line">℄</span>` + AREAS.map((a,i) => {
   const pi = piByKo(a.lead);
   return `<article class="disc">
     <figure>${(i === 0 ? DRAW.hull : DRAW.track)()}</figure>
@@ -854,7 +854,7 @@ $("#areas").insertAdjacentHTML("beforeend", AREAS.map((a,i) => {
     <ul class="topics">${a.topics.map(t => `<li>${esc(t.en)}${ko(t.ko)}</li>`).join("")}</ul>
     <p class="methods"><b>Methods</b> ${a.tags.map(esc).join(", ")}</p>
   </article>`;
-}).join(""));
+}).join("");
 $("#joint").innerHTML = `<div><h3>Where the two meet</h3><span class="ko">${esc(JOINT.ko)}</span></div>
   <div class="body"><p>${esc(JOINT.summary)}</p>${ko(JOINT.summaryKo)}
   <ul>${JOINT.items.map(it => `<li>${esc(it.en)}${ko(it.ko)}</li>`).join("")}</ul>
