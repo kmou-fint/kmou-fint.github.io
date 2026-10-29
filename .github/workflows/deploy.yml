@@ -1,0 +1,124 @@
+# FINT 홈페이지 배포
+# 저장소에 파일을 올릴 때마다 자동으로 실행됩니다.
+# 1) 사이트 파일을 그대로 모은 뒤
+# 2) 화면에 그려지는 글(연구 분야, 구성원, 논문 목록 등)을 index.html 안에 미리 써 넣어
+#    코드를 실행하지 않는 검색 로봇(네이버 등)도 내용을 읽을 수 있게 하고
+# 3) GitHub Pages로 배포합니다.
+# 2)가 실패해도 사이트는 그대로 배포되니 걱정하지 않아도 됩니다.
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Collect site files
+        run: |
+          mkdir _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' ./ _site/
+
+      - name: Pre-render page text for search engines
+        continue-on-error: true
+        run: |
+          mkdir -p /tmp/prerender && cd /tmp/prerender
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund playwright@1.56.0 > /dev/null
+          npx playwright install --with-deps chromium > /dev/null
+          cat > prerender.mjs <<'EOF'
+          import http from "node:http";
+          import fs from "node:fs";
+          import path from "node:path";
+          import { chromium } from "playwright";
+
+          const root = path.resolve(process.argv[2]);
+          const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json",
+            ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".svg": "image/svg+xml", ".ico": "image/x-icon",
+            ".mp4": "video/mp4", ".pdf": "application/pdf", ".xml": "application/xml", ".txt": "text/plain; charset=utf-8" };
+          const server = http.createServer((req, res) => {
+            let p = decodeURIComponent(new URL(req.url, "http://x").pathname);
+            if (p.endsWith("/")) p += "index.html";
+            const file = path.join(root, p);
+            if (!file.startsWith(root)) { res.writeHead(403); return res.end(); }
+            fs.readFile(file, (err, data) => {
+              if (err) { res.writeHead(404); return res.end(); }
+              res.writeHead(200, { "Content-Type": TYPES[path.extname(file).toLowerCase()] || "application/octet-stream" });
+              res.end(data);
+            });
+          });
+          await new Promise(r => server.listen(0, "127.0.0.1", r));
+          const url = `http://127.0.0.1:${server.address().port}/index.html`;
+          const browser = await chromium.launch();
+
+          // 1) 코드를 실행해 화면을 다 그린 뒤, id가 붙은 칸의 내용을 모읍니다.
+          const live = await browser.newPage({ viewport: { width: 1366, height: 900 } });
+          await live.goto(url, { waitUntil: "networkidle", timeout: 60000 });
+          await live.waitForTimeout(1500);
+          const rendered = await live.evaluate(() => {
+            const out = {};
+            document.querySelectorAll("body [id]").forEach(el => { if (!el.closest("svg")) out[el.id] = el.innerHTML; });
+            // 논문 목록은 탭별로 나뉘어 있으므로, 다른 탭(KCI 등)의 논문도 함께 넣어 둡니다.
+            const pubs = document.querySelector("#pubs"), first = document.querySelector("#filters button");
+            if (pubs && first) {
+              const seen = new Set(out.pubs ? [first.dataset.k] : []);
+              document.querySelectorAll("#filters button").forEach(b => {
+                if (seen.has(b.dataset.k) || b.dataset.k === "top5") return;
+                seen.add(b.dataset.k); b.click(); out.pubs = (out.pubs || "") + pubs.innerHTML;
+              });
+              first.click();
+            }
+            return out;
+          });
+
+          // 2) 원래 파일(코드 실행 전)을 열어, 비어 있던 칸에만 그 내용을 채워 넣습니다.
+          const ctx = await browser.newContext({ javaScriptEnabled: false });
+          const raw = await ctx.newPage();
+          await raw.goto(url, { waitUntil: "load" });
+          const result = await raw.evaluate(rendered => {
+            let filled = 0;
+            document.querySelectorAll("body [id]").forEach(el => {
+              if (el.closest("svg")) return;
+              const html = rendered[el.id];
+              if (!html || !html.trim() || html === el.innerHTML) return;
+              if (el.id === "areas" || !el.innerHTML.trim()) { el.innerHTML = html; filled++; }
+            });
+            return { filled, html: "<!doctype html>\n" + document.documentElement.outerHTML + "\n" };
+          }, rendered);
+
+          await browser.close();
+          server.close();
+          if (result.filled < 5) throw new Error(`only ${result.filled} sections rendered; keeping the original index.html`);
+          fs.writeFileSync(path.join(root, "index.html"), result.html);
+          console.log(`Pre-rendered ${result.filled} sections into index.html`);
+          EOF
+          node prerender.mjs "$GITHUB_WORKSPACE/_site"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
