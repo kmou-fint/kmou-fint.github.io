@@ -1011,7 +1011,7 @@ function renderPubs(){
     <div class="pub">
       <p class="t">${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title)}</p>
       <p class="a">${bold(p.authors)}</p>
-      <p class="v">${tagOf(p)}${esc(p.venue)}${pdfOf(p) ? `<a class="pdf-btn" href="${esc(encodeURI(pdfOf(p)))}" download="${esc(pdfSaveName(p))}" aria-label="Download PDF: ${esc(p.title)}"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF</a>` : ""}</p>
+      <p class="v">${tagOf(p)}${esc(p.venue)}${pdfOf(p) ? `<a class="pdf-btn" href="${esc(encodeURI(pdfOf(p)))}" download="${esc(pdfSaveName(p))}" aria-label="Download PDF: ${esc(p.title)}"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF 다운로드</a>` : ""}</p>
     </div>`).join("")}</div></div>`).join("");
 }
 /* PDF 버튼: 저장소 papers 폴더의 파일 목록을 읽어, 제목이 맞는(또는 pdf 칸에 적힌) 논문에만 표시합니다 */
