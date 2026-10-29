@@ -268,6 +268,8 @@ td.when{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink2);w
 .pub .t a{text-decoration:none}
 .pub .t a:hover{text-decoration:underline}
 .pub .a{margin-top:4px;font-size:14.5px;color:var(--ink2)}
+.pdf-btn{display:inline-flex;align-items:center;gap:5px;margin-left:12px;padding:1px 9px;font-family:var(--sans);font-style:normal;font-size:12.5px;font-weight:500;color:var(--ink);text-decoration:none;border:1px solid var(--ink);vertical-align:1px;white-space:nowrap}
+.pdf-btn:hover{background:var(--ink);color:#fff}
 .pub .a b{color:var(--ink);font-weight:600}
 .pub .v{font-size:14.5px;color:var(--ink2);font-style:italic}
 .pub .v em{font-style:normal;font-size:12.5px;font-weight:500;color:var(--ink);border:1px solid var(--ink3);padding:0 6px;margin-right:8px;display:inline-block;line-height:1.5}
@@ -657,87 +659,89 @@ const MEMBERS = [
            모르면 ""로 비워 둡니다(집계에서 '미입력'으로 표시).
    venue : 첫 쉼표 앞부분이 학술지명으로 인식되어 통계에 쓰입니다.
    authors: 연구실 구성원은 **이름** 으로 감싸면 굵게 표시됩니다
-   link  : DOI 주소를 넣으면 제목에 링크가 걸립니다 */
+   link  : DOI 주소를 넣으면 제목에 링크가 걸립니다
+   pdf   : 논문 PDF 경로. 저장소의 papers 폴더에 이 이름 그대로 PDF를 올리면 'PDF' 다운로드 버튼이 자동으로 나타납니다.
+           (파일이 없으면 버튼이 나오지 않으므로, 이름만 맞으면 따로 고칠 것이 없습니다) */
 const PUBS = [
   /* 이희진 교수 국문(KCI) 논문 */
   { year:2025, type:"journal", index:"KCI", jcr:"", authors:"**이희진**",
     title:"선박 상호작용을 고려한 CDC 개선 연구",
-    venue:"한국항해항만학회지, 49(3), 352-358", link:"" },
+    venue:"한국항해항만학회지, 49(3), 352-358", link:"", pdf:"papers/2025_Lee_KINPR_49-3_352.pdf" },
   { year:2025, type:"journal", index:"KCI", jcr:"", authors:"**이희진**",
     title:"포항항에서 CDC를 활용한 벌크 선박 간 충돌 회피 불가능 상황의 정량적 식별",
-    venue:"한국항해항만학회지, 49(3), 286-291", link:"" },
+    venue:"한국항해항만학회지, 49(3), 286-291", link:"", pdf:"papers/2025_Lee_KINPR_49-3_286.pdf" },
   { year:2025, type:"journal", index:"KCI", jcr:"", authors:"**이희진**",
     title:"협수로에서의 해기사 인식 기반 선박 안전영역 실용화를 위한 개선 연구",
-    venue:"한국항해항만학회지, 49(2), 153-158", link:"" },
+    venue:"한국항해항만학회지, 49(2), 153-158", link:"", pdf:"papers/2025_Lee_KINPR_49-2_153.pdf" },
   { year:2025, type:"journal", index:"KCI", jcr:"", authors:"**이희진**",
     title:"풍하중 자동차 운반선의 충돌회피 특성 연구",
-    venue:"한국항해항만학회지, 49(2), 173-178", link:"" },
+    venue:"한국항해항만학회지, 49(2), 173-178", link:"", pdf:"papers/2025_Lee_KINPR_49-2_173.pdf" },
   { year:2025, type:"journal", index:"KCI", jcr:"", authors:"**이희진**",
     title:"합성 LSTM 모델을 활용한 선박 항적 예측",
-    venue:"해양환경안전학회지, 31(2), 241-249", link:"" },
+    venue:"해양환경안전학회지, 31(2), 241-249", link:"", pdf:"papers/2025_Lee_KOSOMES_31-2_241.pdf" },
   { year:2024, type:"journal", index:"KCI", jcr:"", authors:"**이희진**",
     title:"부산 신항에서 유지 선박의 충돌회피협력동작 시점 제시를 위한 CDC 개선연구",
-    venue:"해양환경안전학회지, 30(6), 619-625", link:"" },
+    venue:"해양환경안전학회지, 30(6), 619-625", link:"", pdf:"papers/2024_Lee_KOSOMES_30-6_619.pdf" },
   { year:2025, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, & Namgung, H.",
     title:"A CDC-ANFIS-based model for assessing ship collision risk in autonomous navigation",
-    venue:"Journal of Marine Science and Engineering, 13(8), 1492", link:"" },
+    venue:"Journal of Marine Science and Engineering, 13(8), 1492", link:"", pdf:"papers/2025_Lee_JMSE_13-8_1492.pdf" },
   { year:2025, type:"journal", index:"SCIE", jcr:"5", authors:"**Lee, H. J.**, & Kim, D.",
     title:"Navigating narrow waterways: A quantitative study on timing of stand-on ship actions for cooperative collision avoidance for MASS",
-    venue:"Ocean Engineering, 322, 120400", link:"" },
+    venue:"Ocean Engineering, 322, 120400", link:"", pdf:"papers/2025_Lee_OE_322_120400.pdf" },
   { year:2024, type:"journal", index:"SCIE", jcr:"5", authors:"**Lee, H. J.**, & Park, D. J.",
     title:"Collision evasive action timing for MASS using CNN-LSTM-based ship trajectory prediction in restricted area",
-    venue:"Ocean Engineering, 294, 116766", link:"" },
+    venue:"Ocean Engineering, 294, 116766", link:"", pdf:"papers/2024_Lee_OE_294_116766.pdf" },
   { year:2023, type:"journal", index:"SCIE", jcr:"5", authors:"Song, S., **Kim, D.**, Demirel, Y. K., & Yang, J.",
     title:"An advanced prediction method of ship resistance with heterogeneous hull roughness",
-    venue:"Ocean Engineering, 279, 114602", link:"" },
+    venue:"Ocean Engineering, 279, 114602", link:"", pdf:"papers/2023_Song_OE_279_114602.pdf" },
   { year:2023, type:"journal", index:"KCI", jcr:"", authors:"**Kim, D.**, Zhang, M., & Yim, J.",
     title:"Optimal route planning for maritime autonomous surface ships using a nonlinear model predictive control",
-    venue:"Journal of Navigation and Port Research, 47(2), 66–74", link:"" },
+    venue:"Journal of Navigation and Port Research, 47(2), 66–74", link:"", pdf:"papers/2023_Kim_KINPR_47-2_66.pdf" },
   { year:2023, type:"journal", index:"KCI", jcr:"", authors:"**Kim, D.**, Lee, C., & Yim, J.",
     title:"An evaluation technique for the path-following control performance of autonomous surface ships",
-    venue:"Journal of Navigation and Port Research, 47(1), 10–17", link:"" },
+    venue:"Journal of Navigation and Port Research, 47(1), 10–17", link:"", pdf:"papers/2023_Kim_KINPR_47-1_10.pdf" },
   { year:2023, type:"journal", index:"SCIE", jcr:"5", authors:"**Kim, D.**, Song, S., Turnock, S., & Tezdogan, T.",
     title:"Nonlinear URANS model for path-following control problem towards autonomous marine navigation under wave conditions",
-    venue:"Ocean Engineering, 270, 113681", link:"" },
+    venue:"Ocean Engineering, 270, 113681", link:"", pdf:"papers/2023_Kim_OE_270_113681.pdf" },
   { year:2022, type:"journal", index:"SCIE", jcr:"5", authors:"**Lee, H. J.**, & Furukawa, Y.",
     title:"Timing of stand-on ship actions for cooperative collision avoidance under calm water condition",
-    venue:"Ocean Engineering, 263, 112340", link:"" },
+    venue:"Ocean Engineering, 263, 112340", link:"", pdf:"papers/2022_Lee_OE_263_112340.pdf" },
   { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, & Park, D. J.",
     title:"Analysis of thermal characteristics of MEMS sensors for measuring the rolling period of maritime autonomous surface ships",
-    venue:"Journal of Marine Science and Engineering, 10(7), 859", link:"" },
+    venue:"Journal of Marine Science and Engineering, 10(7), 859", link:"", pdf:"papers/2022_Lee_JMSE_10-7_859.pdf" },
   { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, & Park, D. J.",
     title:"Analysis of navigator decision making through cognitive science for the presentation of a collision-avoidance algorithm for MASSs",
-    venue:"Journal of Marine Science and Engineering, 10(10), 1420", link:"" },
+    venue:"Journal of Marine Science and Engineering, 10(10), 1420", link:"", pdf:"papers/2022_Lee_JMSE_10-10_1420.pdf" },
   { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, & Park, D. J.",
     title:"SASD modeling using an ANFIS to prevent the collision of MASS in restricted areas",
-    venue:"Journal of Marine Science and Engineering, 10(7), 961", link:"" },
+    venue:"Journal of Marine Science and Engineering, 10(7), 961", link:"", pdf:"papers/2022_Lee_JMSE_10-7_961.pdf" },
   { year:2022, type:"journal", index:"SCIE", jcr:"5", authors:"**Kim, D.**, Yim, J., Song, S., Demirel, Y. K., & Tezdogan, T.",
     title:"A systematic investigation on the manoeuvring performance of a ship performing low-speed manoeuvres in adverse weather conditions using CFD",
-    venue:"Ocean Engineering, 263, 112364", link:"" },
+    venue:"Ocean Engineering, 263, 112364", link:"", pdf:"papers/2022_Kim_OE_263_112364.pdf" },
   { year:2022, type:"journal", index:"SCIE", jcr:"5", authors:"**Kim, D.**, Tezdogan, T., & Incecik, A.",
     title:"A high-fidelity CFD-based model for the prediction of ship manoeuvrability in currents",
-    venue:"Ocean Engineering, 256, 111492", link:"" },
+    venue:"Ocean Engineering, 256, 111492", link:"", pdf:"papers/2022_Kim_OE_256_111492.pdf" },
   { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, Tezdogan, T., & Incecik, A.",
     title:"Hydrodynamic analysis of ship manoeuvrability in shallow water using high-fidelity URANS computations",
-    venue:"Applied Ocean Research, 123, 103176", link:"" },
+    venue:"Applied Ocean Research, 123, 103176", link:"", pdf:"papers/2022_Kim_AOR_123_103176.pdf" },
   { year:2022, type:"journal", index:"SCIE", jcr:"5", authors:"**Kim, D.**, & Tezdogan, T.",
     title:"CFD-based hydrodynamic analyses of ship course keeping control and turning performance in irregular waves",
-    venue:"Ocean Engineering, 248, 110808", link:"" },
+    venue:"Ocean Engineering, 248, 110808", link:"", pdf:"papers/2022_Kim_OE_248_110808.pdf" },
   { year:2022, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, Song, S., Sant, T., Demirel, Y. K., & Tezdogan, T.",
     title:"Nonlinear URANS model for evaluating course keeping and turning capabilities of a vessel with propulsion system failure in waves",
-    venue:"International Journal of Naval Architecture and Ocean Engineering, 14, 100425", link:"" },
+    venue:"International Journal of Naval Architecture and Ocean Engineering, 14, 100425", link:"", pdf:"papers/2022_Kim_IJNAOE_14_100425.pdf" },
   { year:2021, type:"journal", index:"SCIE", jcr:"", authors:"**Lee, H. J.**, Furukawa, Y., & Park, D. J.",
     title:"Seafarers' awareness-based domain modelling in restricted areas",
-    venue:"The Journal of Navigation, 74(5), 1172–1188", link:"" },
+    venue:"The Journal of Navigation, 74(5), 1172–1188", link:"", pdf:"papers/2021_Lee_JoN_74-5_1172.pdf" },
   { year:2021, type:"journal", index:"SCIE", jcr:"", authors:"**Kim, D.**, Song, S., Jeong, B., Tezdogan, T., & Incecik, A.",
     title:"Unsteady RANS CFD simulations of ship manoeuvrability and course keeping control under various wave height conditions",
-    venue:"Applied Ocean Research, 117, 102940", link:"" },
+    venue:"Applied Ocean Research, 117, 102940", link:"", pdf:"papers/2021_Kim_AOR_117_102940.pdf" },
   { year:2021, type:"journal", index:"SCIE", jcr:"5", authors:"**Kim, D.**, Song, S., Jeong, B., & Tezdogan, T.",
     title:"Numerical evaluation of a ship's manoeuvrability and course keeping control under various wave conditions using CFD",
-    venue:"Ocean Engineering, 237, 109615", link:"" },
+    venue:"Ocean Engineering, 237, 109615", link:"", pdf:"papers/2021_Kim_OE_237_109615.pdf" },
   { year:2021, type:"journal", index:"SCIE", jcr:"5", authors:"**Kim, D.**, Song, S., & Tezdogan, T.",
     title:"Free running CFD simulations to investigate ship manoeuvrability in waves",
-    venue:"Ocean Engineering, 236, 109567", link:"" }
+    venue:"Ocean Engineering, 236, 109567", link:"", pdf:"papers/2021_Kim_OE_236_109567.pdf" }
 ];
 
 /* 수상 — 연도별로 묶여 카드로 표시됩니다 (최근 순)
@@ -1006,9 +1010,19 @@ function renderPubs(){
     <div class="pub">
       <p class="t">${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title)}</p>
       <p class="a">${bold(p.authors)}</p>
-      <p class="v">${tagOf(p)}${esc(p.venue)}</p>
+      <p class="v">${tagOf(p)}${esc(p.venue)}${p.pdf && pdfOK[p.pdf] ? `<a class="pdf-btn" href="${esc(encodeURI(p.pdf))}" download aria-label="Download PDF: ${esc(p.title)}"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF</a>` : ""}</p>
     </div>`).join("")}</div></div>`).join("");
 }
+/* PDF 버튼: papers 폴더에 실제로 파일이 있는 논문에만 표시 */
+const pdfOK = {};
+(async function checkPdfs(){
+  const list = PUBS.filter(p => p.pdf);
+  await Promise.all(list.map(async p => {
+    try { const r = await fetch(encodeURI(p.pdf), { method: "HEAD", cache: "no-cache" }); pdfOK[p.pdf] = r.ok; }
+    catch { pdfOK[p.pdf] = false; }
+  }));
+  if (list.some(p => pdfOK[p.pdf])) renderPubs();
+})();
 $("#filters").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; filter = b.dataset.k; renderPubs(); });
 renderPubs();
 

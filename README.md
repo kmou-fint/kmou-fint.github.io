@@ -11,6 +11,7 @@ FINT (Fluid dynamics and Intelligent Navigation Technologies) Lab, Korea Maritim
 index.html          홈페이지 전체 (화면 구성 + 내용 데이터)
 img/kmou_logo.png   상단 메뉴의 한국해양대 로고
 img/campus.jpg      첫 화면 캠퍼스 사진
+papers/             논문 PDF (아래 파일 이름 목록 참고)
 video/scenario.mp4  공동 연구 영상 (img/scenario_poster.jpg 는 재생 전 보이는 첫 화면)
 img/                구성원 사진, 수상·소식 사진을 넣는 폴더
 ```
@@ -40,3 +41,37 @@ img/                구성원 사진, 수상·소식 사진을 넣는 폴더
 - 사이트 색을 바꾸려면 `<style>` 맨 위 `:root`의 값을 고칩니다.
 
 GitHub에서 파일을 수정하고 커밋하면 1~2분 뒤 사이트에 반영됩니다.
+
+## 논문 PDF 다운로드 버튼
+
+`papers` 폴더에 아래 이름 그대로 PDF를 올리면 해당 논문 옆에 **PDF** 버튼이 자동으로 생깁니다. 파일이 없는 논문은 버튼이 나오지 않습니다.
+새 논문을 추가할 때는 `PUBS`에 `pdf:"papers/파일이름.pdf"`를 적고 같은 이름으로 올리면 됩니다.
+
+| 파일 이름 | 논문 (학술지, 권(호), 쪽) |
+|---|---|
+| `2025_Lee_KINPR_49-3_352.pdf` | 한국항해항만학회지, 49(3), 352-358 |
+| `2025_Lee_KINPR_49-3_286.pdf` | 한국항해항만학회지, 49(3), 286-291 |
+| `2025_Lee_KINPR_49-2_153.pdf` | 한국항해항만학회지, 49(2), 153-158 |
+| `2025_Lee_KINPR_49-2_173.pdf` | 한국항해항만학회지, 49(2), 173-178 |
+| `2025_Lee_KOSOMES_31-2_241.pdf` | 해양환경안전학회지, 31(2), 241-249 |
+| `2024_Lee_KOSOMES_30-6_619.pdf` | 해양환경안전학회지, 30(6), 619-625 |
+| `2025_Lee_JMSE_13-8_1492.pdf` | Journal of Marine Science and Engineering, 13(8), 1492 |
+| `2025_Lee_OE_322_120400.pdf` | Ocean Engineering, 322, 120400 |
+| `2024_Lee_OE_294_116766.pdf` | Ocean Engineering, 294, 116766 |
+| `2023_Song_OE_279_114602.pdf` | Ocean Engineering, 279, 114602 |
+| `2023_Kim_KINPR_47-2_66.pdf` | Journal of Navigation and Port Research, 47(2), 66–74 |
+| `2023_Kim_KINPR_47-1_10.pdf` | Journal of Navigation and Port Research, 47(1), 10–17 |
+| `2023_Kim_OE_270_113681.pdf` | Ocean Engineering, 270, 113681 |
+| `2022_Lee_OE_263_112340.pdf` | Ocean Engineering, 263, 112340 |
+| `2022_Lee_JMSE_10-7_859.pdf` | Journal of Marine Science and Engineering, 10(7), 859 |
+| `2022_Lee_JMSE_10-10_1420.pdf` | Journal of Marine Science and Engineering, 10(10), 1420 |
+| `2022_Lee_JMSE_10-7_961.pdf` | Journal of Marine Science and Engineering, 10(7), 961 |
+| `2022_Kim_OE_263_112364.pdf` | Ocean Engineering, 263, 112364 |
+| `2022_Kim_OE_256_111492.pdf` | Ocean Engineering, 256, 111492 |
+| `2022_Kim_AOR_123_103176.pdf` | Applied Ocean Research, 123, 103176 |
+| `2022_Kim_OE_248_110808.pdf` | Ocean Engineering, 248, 110808 |
+| `2022_Kim_IJNAOE_14_100425.pdf` | International Journal of Naval Architecture and Ocean Engineering, 14, 100425 |
+| `2021_Lee_JoN_74-5_1172.pdf` | The Journal of Navigation, 74(5), 1172–1188 |
+| `2021_Kim_AOR_117_102940.pdf` | Applied Ocean Research, 117, 102940 |
+| `2021_Kim_OE_237_109615.pdf` | Ocean Engineering, 237, 109615 |
+| `2021_Kim_OE_236_109567.pdf` | Ocean Engineering, 236, 109567 |
