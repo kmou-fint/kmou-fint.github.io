@@ -103,6 +103,8 @@ jobs:
               if (!html || !html.trim() || html === el.innerHTML) return;
               if (el.id === "areas" || !el.innerHTML.trim()) { el.innerHTML = html; filled++; }
             });
+            // 그래프 점의 말풍선용 <title>은 빼 둡니다 (검색엔진이 페이지 제목이 여러 개라고 오해하지 않도록).
+            document.querySelectorAll("body svg title").forEach(x => x.remove());
             return { filled, html: "<!doctype html>\n" + document.documentElement.outerHTML + "\n" };
           }, rendered);
 
