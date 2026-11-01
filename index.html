@@ -794,7 +794,7 @@ if ("IntersectionObserver" in window){
 }
 
 /* ---------- 첫 화면 제목 상자 ---------- */
-/* 브라우저 탭·검색 결과 제목은 <head>의 <title>을 그대로 씁니다 */
+/* 브라우저 탭·검색 결과 제목은 head 안의 title 태그를 그대로 씁니다 */
 $("#c-uni").innerHTML = `${esc(LAB.division)}, ${esc(LAB.univ)}<br>${esc(LAB.univKo)} ${esc(LAB.divisionKo)} 공동연구실`;
 $("#c-title").textContent = LAB.full;
 $("#c-lead").textContent = LAB.lead;
@@ -965,7 +965,7 @@ $("#pub-intro").innerHTML = `${scie.length} SCIE and ${kci.length} KCI journal p
     const x = left + i*colW + colW/2;
     return list.map((p,k) => {
       const cy = h - 32 - k*(dot+gap) - dot/2, r = dot/2;
-      const t = `<title>${esc(p.title)} (${y})</title>`;
+      const t = `\x3ctitle>${esc(p.title)} (${y})\x3c/title>`;   // 점 위에 마우스를 올리면 보이는 논문 제목 (\x3c = "<")
       if (p.type === "patent") return `<circle cx="${x}" cy="${cy}" r="${r}" fill="var(--magenta)">${t}</circle>`;
       return p.index === "SCIE" ? `<circle cx="${x}" cy="${cy}" r="${r}" fill="var(--ink)">${t}</circle>`
                                 : `<circle cx="${x}" cy="${cy}" r="${r-0.75}" fill="#fff" stroke="var(--ink)" stroke-width="1.5">${t}</circle>`;
